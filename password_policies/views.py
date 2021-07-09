@@ -45,7 +45,20 @@ class LoggedOutMixin(View):
         return super(LoggedOutMixin, self).dispatch(request, *args, **kwargs)
 
 
-class PasswordChangeDoneView(TemplateView):
+class UserlinksVisibilityContextMixin(object):
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds `has_permission` variable to the view's context
+        used by base.html to check if userlinks (e.g. logout link)
+        could be displayed"""
+        kwargs.update({
+            'has_permission': self.request.user.is_active and self.request.user.is_staff,
+        })
+        return super(UserlinksVisibilityContextMixin, self).get_context_data(**kwargs)
+
+
+class PasswordChangeDoneView(UserlinksVisibilityContextMixin, TemplateView):
     """
     A view to redirect to after a successfull change of a user's password."""
 
@@ -59,7 +72,7 @@ class PasswordChangeDoneView(TemplateView):
         return super(PasswordChangeDoneView, self).dispatch(*args, **kwargs)
 
 
-class PasswordChangeFormView(FormView):
+class PasswordChangeFormView(UserlinksVisibilityContextMixin, FormView):
     """
     A view that allows logged in users to change their password."""
 
@@ -125,7 +138,7 @@ class PasswordChangeFormView(FormView):
         return super(PasswordChangeFormView, self).get_context_data(**kwargs)
 
 
-class PasswordResetCompleteView(LoggedOutMixin, TemplateView):
+class PasswordResetCompleteView(UserlinksVisibilityContextMixin, LoggedOutMixin, TemplateView):
     """
     A view to redirect to after a password reset has been successfully
     confirmed."""
@@ -214,7 +227,7 @@ class PasswordResetConfirmView(LoggedOutMixin, FormView):
         return self.render_to_response(self.get_context_data())
 
 
-class PasswordResetDoneView(LoggedOutMixin, TemplateView):
+class PasswordResetDoneView(UserlinksVisibilityContextMixin, LoggedOutMixin, TemplateView):
     """
     A view to redirect to after a password reset has been requested."""
 
@@ -224,7 +237,7 @@ class PasswordResetDoneView(LoggedOutMixin, TemplateView):
     template_name = "registration/password_reset_done.html"
 
 
-class PasswordResetFormView(LoggedOutMixin, FormView):
+class PasswordResetFormView(UserlinksVisibilityContextMixin, LoggedOutMixin, FormView):
     """
     A view that allows registered users to change their password."""
 
