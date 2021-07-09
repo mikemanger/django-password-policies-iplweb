@@ -122,6 +122,10 @@ class PasswordChangeFormView(FormView):
     def get_context_data(self, **kwargs):
         name = self.redirect_field_name
         kwargs[name] = self.request.GET.get(name, "")
+        kwargs.update({
+            #: `has_permission` variable is used by base.html to check if userlinks(e.g. logout link) could be displayed
+            'has_permission': self.request.user.is_active and self.request.user.is_staff,
+        })
         return super(PasswordChangeFormView, self).get_context_data(**kwargs)
 
 

@@ -145,6 +145,12 @@ class PasswordChangeMiddleware(MiddlewareMixin):
                 pass
             else:
                 paths.append(r"^%s$" % logout_url)
+            try:
+                logout_url = reverse("admin:logout")
+            except NoReverseMatch:
+                pass
+            else:
+                paths.append(r"^%s$" % logout_url)
         for path in paths:
             if re.match(path, actual_path):
                 return True
