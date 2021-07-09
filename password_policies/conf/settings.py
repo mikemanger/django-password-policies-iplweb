@@ -24,7 +24,7 @@ PASSWORD_CHANGE_REQUIRED_ADMIN_SEARCH_FIELDS = getattr(
 PASSWORD_CHANGE_MIDDLEWARE_ALLOW_LOGOUT = getattr(
     settings, "PASSWORD_CHANGE_MIDDLEWARE_ALLOW_LOGOUT", True
 )
-#: A list of raw strings representing paths to ignore
+#: A list of raw strings or reverse lazied urls representing paths to ignore
 #: while checking if a user has to change his/her password.
 PASSWORD_CHANGE_MIDDLEWARE_EXCLUDED_PATHS = getattr(
     settings, "PASSWORD_CHANGE_MIDDLEWARE_EXCLUDED_PATHS", []
