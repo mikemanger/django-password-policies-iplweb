@@ -146,7 +146,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             else:
                 paths.append(r"^%s$" % logout_url)
         for path in paths:
-            if re.match(path, actual_path):
+            if re.match(str(path), actual_path):
                 return True
         return False
 
