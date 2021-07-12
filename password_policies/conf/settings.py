@@ -68,6 +68,8 @@ Used by the :validator:`DictionaryValidator`.
 PASSWORD_DIFFERENCE_DISTANCE = getattr(settings, "PASSWORD_DIFFERENCE_DISTANCE", 3)
 #: Don't log the person out in the middle of a session. Only do the checks at login time.
 PASSWORD_CHECK_ONLY_AT_LOGIN = getattr(settings, "PASSWORD_CHECK_ONLY_AT_LOGIN", False)
+#: Don't log the person out in the middle of a session. Only do the checks at login time.
+PASSWORD_CHECK_ONLY_FOR_STAFF_USERS = getattr(settings, "PASSWORD_CHECK_ONLY_FOR_STAFF_USERS", False)
 #: Determines after how many seconds a user is forced
 #: to change his/her password.
 #:

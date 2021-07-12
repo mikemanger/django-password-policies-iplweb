@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.test.utils import override_settings
 
 try:
     from urllib.parse import urljoin
@@ -71,3 +72,42 @@ class PasswordPoliciesMiddlewareTest(TestCase):
         self.assertEqual(get_response_location(response["Location"]), self.redirect_url)
         self.client.logout()
         p.delete()
+
+    # @override_settings(PASSWORD_CHECK_ONLY_FOR_STAFF_USERS=False)  # default
+    def test_password_change_required_if_not_staff_user_and_not_PASSWORD_CHECK_ONLY_FOR_STAFF_USERS(self):
+        self.user.is_staff = False
+        self.user.save()
+        self.client.login(username="alice", password=passwords[-1])
+        response = self.client.get(reverse("home"), follow=False)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(get_response_location(response["Location"]), self.redirect_url)
+        self.client.logout()
+
+    @override_settings(PASSWORD_CHECK_ONLY_FOR_STAFF_USERS=True)
+    def test_password_change_not_required_if_not_staff_user_and_PASSWORD_CHECK_ONLY_FOR_STAFF_USERS(self):
+        self.user.is_staff = False
+        self.user.save()
+        self.client.login(username="alice", password=passwords[-1])
+        response = self.client.get(reverse("home"), follow=False)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+
+    # @override_settings(PASSWORD_CHECK_ONLY_FOR_STAFF_USERS=False)  # default
+    def test_password_change_required_if_staff_user_and_not_PASSWORD_CHECK_ONLY_FOR_STAFF_USERS(self):
+        self.user.is_staff = True
+        self.user.save()
+        self.client.login(username="alice", password=passwords[-1])
+        response = self.client.get(reverse("home"), follow=False)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(get_response_location(response["Location"]), self.redirect_url)
+        self.client.logout()
+
+    @override_settings(PASSWORD_CHECK_ONLY_FOR_STAFF_USERS=True)  # default
+    def test_password_change_not_required_if_staff_user_and_PASSWORD_CHECK_ONLY_FOR_STAFF_USERS(self):
+        self.user.is_staff = True
+        self.user.save()
+        self.client.login(username="alice", password=passwords[-1])
+        response = self.client.get(reverse("home"), follow=False)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(get_response_location(response["Location"]), self.redirect_url)
+        self.client.logout()
