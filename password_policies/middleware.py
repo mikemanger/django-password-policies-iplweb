@@ -16,6 +16,7 @@ except ImportError:
 
 from django.conf import settings as django_setings
 
+from password_policies.compat import is_authenticated
 from password_policies.conf import settings
 from password_policies.models import PasswordChangeRequired, PasswordHistory
 from password_policies.utils import PasswordCheck
@@ -176,12 +177,12 @@ class PasswordChangeMiddleware(MiddlewareMixin):
         self.now = timezone.now()
         self.url = reverse("password_change")
 
-        is_authenticated = request.user.is_authenticated
-        is_staff = request.user.is_authenticated and request.user.is_staff
+        auth = is_authenticated(request.user)
+        is_staff = auth and request.user.is_staff
 
         if (
             settings.PASSWORD_DURATION_SECONDS
-            and is_authenticated
+            and auth
             and (is_staff or not settings.PASSWORD_CHECK_ONLY_FOR_STAFF_USERS)
             and not self._is_excluded_path(request.path)
         ):
