@@ -3,8 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.core import signing
 from django.utils import timezone
 
-from password_policies.exceptions import MustBeLoggedOutException
-
 try:
     from django.core.urlresolvers import reverse
 except ImportError:
@@ -21,6 +19,8 @@ from django.views.generic import TemplateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
 
+from password_policies.exceptions import MustBeLoggedOutException
+from password_policies.compat import is_authenticated
 from password_policies.conf import settings
 from password_policies.forms import (
     PasswordPoliciesChangeForm,
@@ -37,7 +37,7 @@ class LoggedOutMixin(View):
         This should be the left-most mixin of a view."""
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
+        if is_authenticated(request.user):
             template_name = settings.TEMPLATE_403_PAGE
             return permission_denied(
                 request, MustBeLoggedOutException, template_name=template_name
