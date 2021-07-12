@@ -170,11 +170,13 @@ class PasswordChangeMiddleware(MiddlewareMixin):
         self.now = timezone.now()
         self.url = reverse("password_change")
 
-        auth = request.user.is_authenticated
+        is_authenticated = request.user.is_authenticated
+        is_staff = request.user.is_authenticated and request.user.is_staff
 
         if (
             settings.PASSWORD_DURATION_SECONDS
-            and auth
+            and is_authenticated
+            and (is_staff or not settings.PASSWORD_CHECK_ONLY_FOR_STAFF_USERS)
             and not self._is_excluded_path(request.path)
         ):
             self.check = PasswordCheck(request.user)
