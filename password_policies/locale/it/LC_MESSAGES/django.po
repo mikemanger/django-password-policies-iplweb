@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-16 20:37+0200\n"
-"PO-Revision-Date: 2021-07-16 20:42+0200\n"
+"PO-Revision-Date: 2021-07-16 20:54+0200\n"
 "Last-Translator: Matteo Lucchesi <matteo@luccalug.it>\n"
 "Language-Team: \n"
 "Language: it\n"
@@ -49,7 +49,7 @@ msgstr[1] "deve contenere %(count)s caratteri"
 #: password_policies/forms/__init__.py:73
 #, python-format
 msgid "must not contain %(count)s consecutive identical characters"
-msgstr "non deve %(count)s consecutivi caratteri identici"
+msgstr "non deve contenere %(count)s consecutivi caratteri identici"
 
 #: password_policies/forms/__init__.py:78
 #, python-format
