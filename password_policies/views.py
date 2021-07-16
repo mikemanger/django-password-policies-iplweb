@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.core import signing
@@ -45,7 +46,17 @@ class LoggedOutMixin(View):
         return super(LoggedOutMixin, self).dispatch(request, *args, **kwargs)
 
 
-class PasswordChangeDoneView(TemplateView):
+class AdminSiteContextMixin(object):
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds the AdminSite context to all views that inherit this Mixin"""
+        context = admin.site.each_context(self.request)
+        context.update(**kwargs)
+        return super(AdminSiteContextMixin, self).get_context_data(**context)
+
+
+class PasswordChangeDoneView(AdminSiteContextMixin, TemplateView):
     """
     A view to redirect to after a successfull change of a user's password."""
 
@@ -59,7 +70,7 @@ class PasswordChangeDoneView(TemplateView):
         return super(PasswordChangeDoneView, self).dispatch(*args, **kwargs)
 
 
-class PasswordChangeFormView(FormView):
+class PasswordChangeFormView(AdminSiteContextMixin, FormView):
     """
     A view that allows logged in users to change their password."""
 
@@ -125,7 +136,7 @@ class PasswordChangeFormView(FormView):
         return super(PasswordChangeFormView, self).get_context_data(**kwargs)
 
 
-class PasswordResetCompleteView(LoggedOutMixin, TemplateView):
+class PasswordResetCompleteView(AdminSiteContextMixin, LoggedOutMixin, TemplateView):
     """
     A view to redirect to after a password reset has been successfully
     confirmed."""
@@ -143,7 +154,7 @@ class PasswordResetCompleteView(LoggedOutMixin, TemplateView):
         return super(PasswordResetCompleteView, self).get_context_data(**kwargs)
 
 
-class PasswordResetConfirmView(LoggedOutMixin, FormView):
+class PasswordResetConfirmView(AdminSiteContextMixin, LoggedOutMixin, FormView):
     #: The form used by this view.
     form_class = PasswordPoliciesForm
     #: An URL to redirect to after the form has been successfully
@@ -214,7 +225,7 @@ class PasswordResetConfirmView(LoggedOutMixin, FormView):
         return self.render_to_response(self.get_context_data())
 
 
-class PasswordResetDoneView(LoggedOutMixin, TemplateView):
+class PasswordResetDoneView(AdminSiteContextMixin, LoggedOutMixin, TemplateView):
     """
     A view to redirect to after a password reset has been requested."""
 
@@ -224,7 +235,7 @@ class PasswordResetDoneView(LoggedOutMixin, TemplateView):
     template_name = "registration/password_reset_done.html"
 
 
-class PasswordResetFormView(LoggedOutMixin, FormView):
+class PasswordResetFormView(AdminSiteContextMixin, LoggedOutMixin, FormView):
     """
     A view that allows registered users to change their password."""
 
