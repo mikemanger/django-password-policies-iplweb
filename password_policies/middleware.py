@@ -1,5 +1,6 @@
 import re
-from datetime import timedelta
+from datetime import datetime, timedelta
+from dateutil.parser import *
 
 try:
     from django.core.urlresolvers import NoReverseMatch, Resolver404, resolve, reverse
@@ -15,6 +16,7 @@ except ImportError:
     MiddlewareMixin = object
 
 from django.conf import settings as django_setings
+
 
 from password_policies.compat import is_authenticated
 from password_policies.conf import settings
@@ -84,7 +86,10 @@ class PasswordChangeMiddleware(MiddlewareMixin):
                 # TODO: This relies on request.user.date_joined which might not
                 # be available!!!
                 request.session[self.last] = request.user.date_joined
-        if request.session[self.last] < self.expiry_datetime:
+        date_last = request.session[self.last]
+        if not isinstance(date_last, datetime):
+            date_last = parse(request.session[self.last])  # "%Y-%m-%dT%H:%M:%S.%f"
+        if date_last < self.expiry_datetime:
             request.session[self.required] = True
             if not PasswordChangeRequired.objects.filter(user=request.user).count():
                 PasswordChangeRequired.objects.create(user=request.user)
@@ -107,7 +112,10 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             if PasswordChangeRequired.objects.filter(user=request.user).count():
                 request.session[self.required] = True
                 return
-            if request.session[self.checked] < self.expiry_datetime:
+            date_checked = request.session[self.checked]
+            if not isinstance(date_checked, datetime):
+                date_checked = parse(request.session[self.checked]) # "%Y-%m-%dT%H:%M:%S.%f"
+            if date_checked < self.expiry_datetime:
                 try:
                     del request.session[self.last]
                     del request.session[self.checked]
