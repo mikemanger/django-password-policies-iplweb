@@ -18,7 +18,7 @@ from django.conf import settings as django_setings
 
 from password_policies.conf import settings
 from password_policies.models import PasswordChangeRequired, PasswordHistory
-from password_policies.utils import PasswordCheck
+from password_policies.utils import PasswordCheck, string_to_datetime, datetime_to_string
 
 
 class PasswordChangeMiddleware(MiddlewareMixin):
@@ -78,12 +78,14 @@ class PasswordChangeMiddleware(MiddlewareMixin):
         if not request.session.get(self.last, None):
             newest = PasswordHistory.objects.get_newest(request.user)
             if newest:
-                request.session[self.last] = newest.created
+                request.session[self.last] = datetime_to_string(newest.created)
             else:
                 # TODO: This relies on request.user.date_joined which might not
                 # be available!!!
-                request.session[self.last] = request.user.date_joined
-        if request.session[self.last] < self.expiry_datetime:
+                request.session[self.last] = datetime_to_string(request.user.date_joined)
+
+        date_last = string_to_datetime(request.session[self.last])
+        if date_last < self.expiry_datetime:
             request.session[self.required] = True
             if not PasswordChangeRequired.objects.filter(user=request.user).count():
                 PasswordChangeRequired.objects.create(user=request.user)
@@ -93,7 +95,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
     def _check_necessary(self, request):
 
         if not request.session.get(self.checked, None):
-            request.session[self.checked] = self.now
+            request.session[self.checked] = datetime_to_string(self.now)
 
             #  If the PASSWORD_CHECK_ONLY_AT_LOGIN is set, then only check at the beginning of session, which we can
             #  tell by self.now time having just been set.
@@ -106,7 +108,9 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             if PasswordChangeRequired.objects.filter(user=request.user).count():
                 request.session[self.required] = True
                 return
-            if request.session[self.checked] < self.expiry_datetime:
+
+            date_checked = string_to_datetime(request.session[self.checked])
+            if date_checked < self.expiry_datetime:
                 try:
                     del request.session[self.last]
                     del request.session[self.checked]
@@ -114,6 +118,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
                     del request.session[self.expired]
                 except KeyError:
                     pass
+
             if settings.PASSWORD_USE_HISTORY:
                 self._check_history(request)
         else:

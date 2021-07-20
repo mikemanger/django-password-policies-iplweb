@@ -1,6 +1,7 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from django.utils import timezone
+from django.conf import settings as django_settings
 from django.core.exceptions import ObjectDoesNotExist
 
 from password_policies.conf import settings
@@ -46,3 +47,29 @@ exists the verification is successful.
         "Returns the date and time when the user's password has expired."
         seconds = settings.PASSWORD_DURATION_SECONDS
         return timezone.now() - timedelta(seconds=seconds)
+
+def datetime_to_string(value, format=None):
+    """ Transform datetime object in a string with input format
+:returns: formatted datetime
+:rtype: str
+"""
+    if format is None:
+        format = "%Y-%m-%dT%H:%M:%S.%f%z" if django_settings.USE_TZ else "%Y-%m-%dT%H:%M:%S.%f"
+
+    if not isinstance(value, str):
+        return datetime.strftime(value, format)
+    else:
+        return value
+
+def string_to_datetime(value, format=None):
+    """ Transform string object in a datetime with input format
+:returns: formatted string
+:rtype: datetime
+"""
+    if format is None:
+        format = "%Y-%m-%dT%H:%M:%S.%f%z" if django_settings.USE_TZ else "%Y-%m-%dT%H:%M:%S.%f"
+
+    if not isinstance(value, datetime):
+        return datetime.strptime(value, format)
+    else:
+        return value

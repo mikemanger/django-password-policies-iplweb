@@ -27,7 +27,7 @@ from password_policies.forms import (
     PasswordPoliciesForm,
     PasswordResetForm,
 )
-
+from password_policies.utils import string_to_datetime, datetime_to_string
 
 class LoggedOutMixin(View):
     """
@@ -107,8 +107,10 @@ class PasswordChangeFormView(FormView):
         last = "_password_policies_last_changed"
         required = "_password_policies_change_required"
         now = timezone.now()
-        self.request.session[checked] = now
-        self.request.session[last] = now
+        now_str = datetime_to_string(now)
+
+        self.request.session[checked] = now_str
+        self.request.session[last] = now_str
         self.request.session[required] = False
         redirect_to = self.request.POST.get(self.redirect_field_name, "")
         if redirect_to:
