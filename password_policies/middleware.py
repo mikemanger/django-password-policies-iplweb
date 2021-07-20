@@ -1,6 +1,5 @@
 import re
-from datetime import datetime, timedelta
-from dateutil.parser import *
+from datetime import timedelta
 
 try:
     from django.core.urlresolvers import NoReverseMatch, Resolver404, resolve, reverse
@@ -21,7 +20,7 @@ from django.conf import settings as django_setings
 from password_policies.compat import is_authenticated
 from password_policies.conf import settings
 from password_policies.models import PasswordChangeRequired, PasswordHistory
-from password_policies.utils import PasswordCheck
+from password_policies.utils import PasswordCheck, string_to_datetime, datetime_to_string
 
 
 class PasswordChangeMiddleware(MiddlewareMixin):
@@ -86,15 +85,17 @@ class PasswordChangeMiddleware(MiddlewareMixin):
                 # TODO: This relies on request.user.date_joined which might not
                 # be available!!!
                 request.session[self.last] = request.user.date_joined
-        date_last = request.session[self.last]
-        if not isinstance(date_last, datetime):
-            date_last = parse(request.session[self.last])  # "%Y-%m-%dT%H:%M:%S.%f"
+
+        date_last_origin = request.session[self.last]
+        date_last = string_to_datetime(date_last_origin)
         if date_last < self.expiry_datetime:
             request.session[self.required] = True
             if not PasswordChangeRequired.objects.filter(user=request.user).count():
                 PasswordChangeRequired.objects.create(user=request.user)
         else:
             request.session[self.required] = False
+
+        request.session[self.last] = datetime_to_string(date_last_origin)
 
     def _check_necessary(self, request):
 
@@ -112,9 +113,9 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             if PasswordChangeRequired.objects.filter(user=request.user).count():
                 request.session[self.required] = True
                 return
-            date_checked = request.session[self.checked]
-            if not isinstance(date_checked, datetime):
-                date_checked = parse(request.session[self.checked]) # "%Y-%m-%dT%H:%M:%S.%f"
+
+            date_checked_origin = request.session[self.checked]
+            date_checked = string_to_datetime(date_checked_origin)
             if date_checked < self.expiry_datetime:
                 try:
                     del request.session[self.last]
@@ -123,6 +124,8 @@ class PasswordChangeMiddleware(MiddlewareMixin):
                     del request.session[self.expired]
                 except KeyError:
                     pass
+            request.session[self.checked] = datetime_to_string(date_checked_origin)
+
             if settings.PASSWORD_USE_HISTORY:
                 self._check_history(request)
         else:
