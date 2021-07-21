@@ -20,7 +20,6 @@ from password_policies.conf import settings
 from password_policies.models import PasswordChangeRequired, PasswordHistory
 from password_policies.utils import PasswordCheck, string_to_datetime, datetime_to_string
 
-
 class PasswordChangeMiddleware(MiddlewareMixin):
     """
     A middleware to force a password change.
@@ -68,10 +67,10 @@ class PasswordChangeMiddleware(MiddlewareMixin):
         This middleware does not try to redirect using the HTTPS
         protocol."""
 
-    checked = "_password_policies_last_checked"
-    expired = "_password_policies_expired"
-    last = "_password_policies_last_changed"
-    required = "_password_policies_change_required"
+    checked = settings.PASSWORD_POLICIES_LAST_CHECKED_SESSION_KEY
+    expired = settings.PASSWORD_POLICIES_EXPIRED_SESSION_KEY
+    last = settings.PASSWORD_POLICIES_LAST_CHANGED_SESSION_KEY
+    required = settings.PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY
     td = timedelta(seconds=settings.PASSWORD_DURATION_SECONDS)
 
     def _check_history(self, request):
