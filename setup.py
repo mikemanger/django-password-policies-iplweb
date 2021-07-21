@@ -2,6 +2,10 @@ from setuptools import find_packages, setup
 
 install_requires = ["django"]
 
+tests_require = [
+    'freezegun',
+]
+
 setup(
     name="django-password-policies-iplweb",
     version=__import__("password_policies").__version__,
@@ -32,5 +36,6 @@ and a mechanism to force password changes.
         "Topic :: Utilities",
     ],
     install_requires=install_requires,
+    tests_require=tests_require,
     test_suite="tests.runtests",
 )

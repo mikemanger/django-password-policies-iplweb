@@ -19,6 +19,7 @@ USE_I18N = True
 SECRET_KEY = "fake-key"
 
 INSTALLED_APPS = [
+    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -83,5 +84,6 @@ MIDDLEWARE = (
 )
 
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+
 
 MEDIA_URL = "/media/somewhere/"
