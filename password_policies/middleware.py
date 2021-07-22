@@ -100,7 +100,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             #  tell by self.now time having just been set.
         if (
             not settings.PASSWORD_CHECK_ONLY_AT_LOGIN
-            or request.session.get(self.checked, None) == self.now
+            or request.session.get(self.checked, None) == datetime_to_string(self.now)
         ):
             # If a password change is enforced we won't check
             # the user's password history, thus reducing DB hits...
