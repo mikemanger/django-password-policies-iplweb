@@ -21,6 +21,7 @@ try:
 except ImportError:
     from django.contrib.sites.shortcuts import get_current_site
 
+from django.template.defaultfilters import unordered_list
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.safestring import mark_safe
@@ -64,48 +65,48 @@ class PasswordPoliciesForm(forms.Form):
         help_text_chunks = []
         if settings.PASSWORD_MIN_LENGTH:
             help_text_chunks.append(
-                ungettext("must contain 1 character",
-                          "must contain %(count)s characters",
+                ungettext("must be at least 1 character long",
+                          "must be at least %(count)s characters long",
                           settings.PASSWORD_MIN_LENGTH
                           ) % {"count": settings.PASSWORD_MIN_LENGTH}
             )
         if settings.PASSWORD_MAX_CONSECUTIVE:
             help_text_chunks.append(
-                ugettext("must not contain %(count)s consecutive identical characters")
+                ugettext("must not contain %(count)s or more consecutive identical characters")
                 % {"count": settings.PASSWORD_MAX_CONSECUTIVE}
             )
         if settings.PASSWORD_MIN_LETTERS:
             help_text_chunks.append(
-                ungettext("must contain 1 alphanumeric character",
-                          "must contain %(count)s alphanumeric characters",
+                ungettext("must contain almost 1 alphanumeric character",
+                          "must contain almost %(count)s alphanumeric characters",
                           settings.PASSWORD_MIN_LETTERS
                           ) % {"count": settings.PASSWORD_MIN_LETTERS}
             )
         if settings.PASSWORD_MIN_LOWERCASE_LETTERS:
             help_text_chunks.append(
-                ungettext("must contain 1 lowercase character",
-                          "must contain %(count)s lowercase characters",
+                ungettext("must contain almost 1 lowercase character",
+                          "must contain almost %(count)s lowercase characters",
                           settings.PASSWORD_MIN_LOWERCASE_LETTERS
                           ) % {"count": settings.PASSWORD_MIN_LOWERCASE_LETTERS}
             )
         if settings.PASSWORD_MIN_UPPERCASE_LETTERS:
             help_text_chunks.append(
-                ungettext("must contain 1 uppercase character",
-                          "must contain %(count)s uppercase characters",
+                ungettext("must contain almost 1 uppercase character",
+                          "must contain almost %(count)s uppercase characters",
                           settings.PASSWORD_MIN_UPPERCASE_LETTERS
                           ) % {"count": settings.PASSWORD_MIN_UPPERCASE_LETTERS}
             )
         if settings.PASSWORD_MIN_NUMBERS:
             help_text_chunks.append(
-                ungettext("must contain 1 number",
-                          "must contain %(count)s numbers",
+                ungettext("must contain almost 1 number",
+                          "must contain almost %(count)s numbers",
                           settings.PASSWORD_MIN_NUMBERS
                           ) % {"count": settings.PASSWORD_MIN_NUMBERS}
             )
         if settings.PASSWORD_MIN_SYMBOLS:
             help_text_chunks.append(
-                ungettext("must contain 1 special character (e.g. @#$%%^&.)",
-                          "must contain %(count)s special characters (e.g. @#$%%^&.)",
+                ungettext("must contain almost 1 special character (e.g. @#$%%^&.)",
+                          "must contain almost %(count)s special characters (e.g. @#$%%^&.)",
                           settings.PASSWORD_MIN_SYMBOLS
                           ) % {"count": settings.PASSWORD_MIN_SYMBOLS}
             )
@@ -116,12 +117,16 @@ class PasswordPoliciesForm(forms.Form):
                           settings.PASSWORD_HISTORY_COUNT
                           ) % {"count": settings.PASSWORD_HISTORY_COUNT}
             )
-        self.fields['new_password1'].help_text = mark_safe(
-            _("The new password") + "<br>" +
-            "<br>".join(
-                ["• %s" % x for x in help_text_chunks]
-            )
+        self.fields['new_password1'].help_text = (
+            "<div class=\"new_password1-help-text\">" + ugettext("The new password must have the following characteristics:") + "</div>"
+            + unordered_list(help_text_chunks)
         )
+        # self.fields['new_password1'].help_text = mark_safe(
+        #     _("The new password must have the following characteristics:") + "<br>" +
+        #     "<br>".join(
+        #         ["• %s" % x for x in help_text_chunks]
+        #     )
+        # )
 
     def clean_new_password1(self):
         """
