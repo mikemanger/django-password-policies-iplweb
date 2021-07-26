@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django import forms
@@ -14,7 +13,6 @@ try:
     from collections import OrderedDict as SortedDict
 except ImportError:
     from django.utils.datastructures import SortedDict
-
 
 try:
     from django.contrib.sites.models import get_current_site
@@ -118,15 +116,10 @@ class PasswordPoliciesForm(forms.Form):
                           ) % {"count": settings.PASSWORD_HISTORY_COUNT}
             )
         self.fields['new_password1'].help_text = (
-            "<div class=\"new_password1-help-text\">" + ugettext("The new password must have the following characteristics:") + "</div>"
+            "<div class=\"new_password1-help-text\">" + ugettext(
+            "The new password must have the following characteristics:") + "</div>"
             + unordered_list(help_text_chunks)
         )
-        # self.fields['new_password1'].help_text = mark_safe(
-        #     _("The new password must have the following characteristics:") + "<br>" +
-        #     "<br>".join(
-        #         ["• %s" % x for x in help_text_chunks]
-        #     )
-        # )
 
     def clean_new_password1(self):
         """
