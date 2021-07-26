@@ -77,36 +77,36 @@ class PasswordPoliciesForm(forms.Form):
             )
         if settings.PASSWORD_MIN_LETTERS:
             help_text_chunks.append(
-                ungettext("must contain almost 1 alphanumeric character",
-                          "must contain almost %(count)s alphanumeric characters",
+                ungettext("must contain at least 1 alphanumeric character",
+                          "must contain at least %(count)s alphanumeric characters",
                           settings.PASSWORD_MIN_LETTERS
                           ) % {"count": settings.PASSWORD_MIN_LETTERS}
             )
         if settings.PASSWORD_MIN_LOWERCASE_LETTERS:
             help_text_chunks.append(
-                ungettext("must contain almost 1 lowercase character",
-                          "must contain almost %(count)s lowercase characters",
+                ungettext("must contain at least 1 lowercase character",
+                          "must contain at least %(count)s lowercase characters",
                           settings.PASSWORD_MIN_LOWERCASE_LETTERS
                           ) % {"count": settings.PASSWORD_MIN_LOWERCASE_LETTERS}
             )
         if settings.PASSWORD_MIN_UPPERCASE_LETTERS:
             help_text_chunks.append(
-                ungettext("must contain almost 1 uppercase character",
-                          "must contain almost %(count)s uppercase characters",
+                ungettext("must contain at least 1 uppercase character",
+                          "must contain at least %(count)s uppercase characters",
                           settings.PASSWORD_MIN_UPPERCASE_LETTERS
                           ) % {"count": settings.PASSWORD_MIN_UPPERCASE_LETTERS}
             )
         if settings.PASSWORD_MIN_NUMBERS:
             help_text_chunks.append(
-                ungettext("must contain almost 1 number",
-                          "must contain almost %(count)s numbers",
+                ungettext("must contain at least 1 number",
+                          "must contain at least %(count)s numbers",
                           settings.PASSWORD_MIN_NUMBERS
                           ) % {"count": settings.PASSWORD_MIN_NUMBERS}
             )
         if settings.PASSWORD_MIN_SYMBOLS:
             help_text_chunks.append(
-                ungettext("must contain almost 1 special character (e.g. @#$%%^&.)",
-                          "must contain almost %(count)s special characters (e.g. @#$%%^&.)",
+                ungettext("must contain at least 1 special character (e.g. @#$%%^&.)",
+                          "must contain at least %(count)s special characters (e.g. @#$%%^&.)",
                           settings.PASSWORD_MIN_SYMBOLS
                           ) % {"count": settings.PASSWORD_MIN_SYMBOLS}
             )

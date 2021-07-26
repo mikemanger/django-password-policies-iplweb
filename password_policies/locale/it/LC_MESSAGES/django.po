@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-23 17:48+0200\n"
-"PO-Revision-Date: 2021-07-23 18:29+0200\n"
+"POT-Creation-Date: 2021-07-26 10:44+0200\n"
+"PO-Revision-Date: 2021-07-26 10:45+0200\n"
 "Last-Translator: Matteo Lucchesi <matteo@luccalug.it>\n"
 "Language-Team: \n"
 "Language: it\n"
@@ -22,100 +22,101 @@ msgstr ""
 msgid "Force password change for selected users"
 msgstr "Forza modifica password per gli utenti selezionati"
 
-#: password_policies/forms/__init__.py:43
-#: password_policies/forms/__init__.py:349 password_policies/forms/admin.py:17
+#: password_policies/forms/__init__.py:44
+#: password_policies/forms/__init__.py:354 password_policies/forms/admin.py:17
 msgid "The two password fields didn't match."
 msgstr "I due campi password non combaciano."
 
-#: password_policies/forms/__init__.py:45 password_policies/forms/admin.py:18
+#: password_policies/forms/__init__.py:46 password_policies/forms/admin.py:18
 msgid "The new password was used before. Please enter another one."
 msgstr "La nuova password è gia stata usata. Per favore inseriscine un'altra."
 
-#: password_policies/forms/__init__.py:49
+#: password_policies/forms/__init__.py:50
 msgid "New password"
 msgstr "Nuova password"
 
-#: password_policies/forms/__init__.py:54
+#: password_policies/forms/__init__.py:55
 msgid "New password confirmation"
 msgstr "Conferma nuova password"
 
-#: password_policies/forms/__init__.py:67
+#: password_policies/forms/__init__.py:68
 #, python-format
 msgid "must be at least 1 character long"
 msgid_plural "must be at least %(count)s characters long"
 msgstr[0] "deve contenere almeno un carattere"
 msgstr[1] "deve contenere almeno %(count)s caratteri"
 
-#: password_policies/forms/__init__.py:74
+#: password_policies/forms/__init__.py:75
 #, python-format
 msgid "must not contain %(count)s or more consecutive identical characters"
 msgstr "non deve contenere %(count)s o più caratteri identici consecutivi"
 
-#: password_policies/forms/__init__.py:79
+#: password_policies/forms/__init__.py:80
 #, python-format
-msgid "must contain almost 1 alphanumeric character"
-msgid_plural "must contain almost %(count)s alphanumeric characters"
+msgid "must contain at least 1 alphanumeric character"
+msgid_plural "must contain at least %(count)s alphanumeric characters"
 msgstr[0] "deve contenere almeno 1 carattere alfanumerico"
 msgstr[1] "deve contenere almeno %(count)s caratteri alfanumerici"
 
-#: password_policies/forms/__init__.py:86
+#: password_policies/forms/__init__.py:87
 #, python-format
-msgid "must contain almost 1 lowercase character"
-msgid_plural "must contain almost %(count)s lowercase characters"
+msgid "must contain at least 1 lowercase character"
+msgid_plural "must contain at least %(count)s lowercase characters"
 msgstr[0] "deve contenere almeno 1 carattere minuscolo"
 msgstr[1] "deve contenere almeno %(count)s caratteri minuscoli"
 
-#: password_policies/forms/__init__.py:93
+#: password_policies/forms/__init__.py:94
 #, python-format
-msgid "must contain almost 1 uppercase character"
-msgid_plural "must contain almost %(count)s uppercase characters"
+msgid "must contain at least 1 uppercase character"
+msgid_plural "must contain at least %(count)s uppercase characters"
 msgstr[0] "deve contenere almeno 1 carattere maiuscolo"
 msgstr[1] "deve contenere almeno %(count)s caratteri maiuscoli"
 
-#: password_policies/forms/__init__.py:100
+#: password_policies/forms/__init__.py:101
 #, python-format
-msgid "must contain almost 1 number"
-msgid_plural "must contain almost %(count)s numbers"
+msgid "must contain at least 1 number"
+msgid_plural "must contain at least %(count)s numbers"
 msgstr[0] "deve contenere almeno 1 numero"
 msgstr[1] "deve contenere almeno %(count)s numeri"
 
-#: password_policies/forms/__init__.py:107
+#: password_policies/forms/__init__.py:108
 #, python-format
-msgid "must contain almost 1 special character (e.g. @#$%%^&.)"
-msgid_plural "must contain almost %(count)s special characters (e.g. @#$%%^&.)"
+msgid "must contain at least 1 special character (e.g. @#$%%^&.)"
+msgid_plural ""
+"must contain at least %(count)s special characters (e.g. @#$%%^&.)"
 msgstr[0] "deve contenere almeno 1 carattere speciale (es. @#$%%^&.)"
 msgstr[1] "deve contenere almeno %(count)s carattere speciale (es. @#$%%^&.)"
 
-#: password_policies/forms/__init__.py:114
+#: password_policies/forms/__init__.py:115
 #, python-format
 msgid "must differ from your last password"
 msgid_plural "must differ from your last %(count)s passwords"
 msgstr[0] "deve essere diversa dalla tua ultima password"
 msgstr[1] "deve essere diversa dalle tue ultime %(count)s password"
 
-#: password_policies/forms/__init__.py:120
+#: password_policies/forms/__init__.py:121
 msgid "The new password must have the following characteristics:"
 msgstr "La nuova password deve avere le seguenti caratteristiche:"
 
-#: password_policies/forms/__init__.py:177
+#: password_policies/forms/__init__.py:182
 msgid "Your old password was entered incorrectly. Please enter it again."
 msgstr ""
 "La tua vecchia password non è stat inserita correttamente. Per favore "
 "inseriscila di nuovo."
 
-#: password_policies/forms/__init__.py:179
+#: password_policies/forms/__init__.py:184
 msgid "The old and the new password are too similar."
 msgstr "La vecchia e la nuova password sono troppo simili."
 
-#: password_policies/forms/__init__.py:180
+#: password_policies/forms/__init__.py:185
 msgid "The old and the new password are the same."
 msgstr "La vecchia e la nuova password sono identiche."
 
-#: password_policies/forms/__init__.py:183
+#: password_policies/forms/__init__.py:188
 msgid "Old password"
 msgstr "Vecchia password"
 
-#: password_policies/forms/__init__.py:245
+#: password_policies/forms/__init__.py:250
 msgid ""
 "That e-mail address doesn't have an associated user account. Are you sure "
 "you've registered?"
@@ -123,43 +124,43 @@ msgstr ""
 "L'indirizzo e-mail non ha un account associato. Sei sicuro di essere "
 "registrato?"
 
-#: password_policies/forms/__init__.py:249
+#: password_policies/forms/__init__.py:254
 msgid ""
 "The user account associated with this e-mail address cannot reset the "
 "password."
 msgstr ""
 "L'utente associato con questo indirizzo e-mail non può resettare la password."
 
-#: password_policies/forms/__init__.py:254
+#: password_policies/forms/__init__.py:259
 msgid "E-mail"
 msgstr "E-mail"
 
-#: password_policies/forms/__init__.py:348
+#: password_policies/forms/__init__.py:353
 msgid "A user with that username already exists."
 msgstr "Un utente con questo username esiste già."
 
-#: password_policies/forms/__init__.py:352
+#: password_policies/forms/__init__.py:357
 msgid "Username"
 msgstr "Username"
 
-#: password_policies/forms/__init__.py:356
+#: password_policies/forms/__init__.py:361
 msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr "Obbligatorio. 30 o meno caratteri. Solo lettere, numeri e @/./+/-/_ ."
 
-#: password_policies/forms/__init__.py:360
+#: password_policies/forms/__init__.py:365
 msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
 msgstr ""
 "Questo valore può contenere solo lettere, numeri e caratteri @/./+/-/_ ."
 
-#: password_policies/forms/__init__.py:365
+#: password_policies/forms/__init__.py:370
 msgid "Password"
 msgstr "Password"
 
-#: password_policies/forms/__init__.py:370
+#: password_policies/forms/__init__.py:375
 msgid "Password confirmation"
 msgstr "Conferma password"
 
-#: password_policies/forms/__init__.py:372
+#: password_policies/forms/__init__.py:377
 msgid "Enter the same password as above, for verification."
 msgstr "Inserisci la stessa password già inserita, per verifica."
 
