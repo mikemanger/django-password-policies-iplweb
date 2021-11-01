@@ -139,6 +139,8 @@ class PasswordResetCompleteView(LoggedOutMixin, TemplateView):
         """
         Adds the login URL to redirect to (defaults to the LOGIN_URL setting
         in Django) to the view's context."""
+        from django.conf import settings
+
         kwargs["login_url"] = resolve_url(settings.LOGIN_URL)
         return super(PasswordResetCompleteView, self).get_context_data(**kwargs)
 
