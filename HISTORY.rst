@@ -1,3 +1,8 @@
+0.8.4
+-----
+
+* fix password_reset_complete view (settings.LOGIN_URL problem)
+
 0.8.3
 -----
 
