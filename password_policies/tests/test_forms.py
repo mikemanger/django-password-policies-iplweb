@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.utils.encoding import force_text
+from django.test.utils import override_settings
 
 from password_policies.forms import (
     PasswordPoliciesChangeForm,
@@ -8,6 +8,7 @@ from password_policies.forms import (
 )
 from password_policies.forms.fields import PasswordPoliciesField
 from password_policies.tests.lib import create_password_history, create_user, passwords
+from django.utils.encoding import force_str
 
 
 class PasswordPoliciesFieldTest(TestCase):
@@ -23,6 +24,22 @@ class PasswordPoliciesFieldTest(TestCase):
             PasswordPoliciesField,
             {"Chad+pher9k": "Chad+pher9k"},
             {u"4+53795": [u"The new password must contain 3 or more letters."]},
+        )
+
+    @override_settings(PASSWORD_MIN_LOWERCASE_LETTERS=1)
+    def test_password_field_lowercase(self):
+        self.assertFieldOutput(
+            PasswordPoliciesField,
+            {"Chad+pher9k": "Chad+pher9k"},
+            {u"CHAD+PHER9K": [u"The new password must contain 1 or more lowercase letter."]},
+        )
+
+    @override_settings(PASSWORD_MIN_UPPERCASE_LETTERS=1)
+    def test_password_field_uppercase(self):
+        self.assertFieldOutput(
+            PasswordPoliciesField,
+            {"Chad+pher9k": "Chad+pher9k"},
+            {u"chad+pher9k": [u"The new password must contain 1 or more uppercase letter."]},
         )
 
     def test_password_field_3(self):
@@ -107,7 +124,7 @@ class PasswordPoliciesFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form["new_password1"].errors,
-            [force_text(form.error_messages["password_used"])],
+            [force_str(form.error_messages["password_used"])],
         )
 
     def test_password_mismatch(self):
@@ -116,7 +133,7 @@ class PasswordPoliciesFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form["new_password2"].errors,
-            [force_text(form.error_messages["password_mismatch"])],
+            [force_str(form.error_messages["password_mismatch"])],
         )
 
     def test_password_verification_unicode(self):
@@ -147,7 +164,7 @@ class PasswordPoliciesChangeFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form["old_password"].errors,
-            [force_text(form.error_messages["password_incorrect"])],
+            [force_str(form.error_messages["password_incorrect"])],
         )
         self.assertFalse(form.is_valid())
 
@@ -173,7 +190,7 @@ class PasswordResetFormTest(TestCase):
         form = PasswordResetForm(data)
         self.assertFalse(form.is_valid())
         self.assertEqual(
-            form["email"].errors, [force_text(form.error_messages["unusable"])]
+            form["email"].errors, [force_str(form.error_messages["unusable"])]
         )
         self.assertFalse(form.is_valid())
 

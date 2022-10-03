@@ -1,8 +1,8 @@
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
 
 from password_policies.conf import settings
 from password_policies.models import PasswordChangeRequired, PasswordHistory
+from django.utils.translation import gettext_lazy as _
 
 
 def force_password_change(modeladmin, request, queryset):

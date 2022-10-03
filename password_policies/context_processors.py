@@ -1,3 +1,5 @@
+from password_policies.compat import is_authenticated
+from password_policies.conf import settings
 from password_policies.models import PasswordHistory
 
 
@@ -24,16 +26,11 @@ in a project's settings file::
     )
 """
     d = {}
-    try:
-        # Did this ever worked? It gives error on Django 2.0
-        # and I haven't ran the test suite before that...
-        auth = request.user.is_authenticated()
-    except TypeError:
-        auth = request.user.is_authenticated
+    auth = is_authenticated(request.user)
     if auth:
-        if '_password_policies_change_required' not in request.session:
+        if settings.PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY not in request.session:
             r = PasswordHistory.objects.change_required(request.user)
         else:
-            r = request.session['_password_policies_change_required']
+            r = request.session[settings.PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY]
         d['password_change_required'] = r
     return d

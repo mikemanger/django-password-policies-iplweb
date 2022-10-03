@@ -6,12 +6,10 @@ import re
 import stringprep
 
 from django.core.exceptions import ValidationError
-from django.utils.encoding import smart_text
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ungettext
 
 from password_policies.conf import settings
+from django.utils.translation import gettext_lazy as _, ngettext
+from django.utils.encoding import force_str, smart_str
 
 try:
     # Python 3 does not have an xrange, this will throw a NameError
@@ -34,7 +32,7 @@ is less than :py:func:`~BaseCountValidator.get_min_count`.
         if not self.get_min_count():
             return
         counter = 0
-        for character in force_text(value):
+        for character in force_str(value):
             category = unicodedata.category(character)
             if category in self.categories:
                 counter += 1
@@ -64,13 +62,13 @@ defined in `RFC 4013`_.
     r_and_al_cat = False
 
     def __call__(self, value):
-        value = force_text(value)
+        value = force_str(value)
         self.first = value[0]
         self.last = value[:-1]
         self._process(value)
 
     def _process(self, value):
-        for code in force_text(value):
+        for code in force_str(value):
             # TODO: Is this long enough?
             if stringprep.in_table_c12(code) or stringprep.in_table_c21_c22(code) or \
                 stringprep.in_table_c3(code) or stringprep.in_table_c4(code) or \
@@ -102,7 +100,7 @@ is greater than :py:attr:`~password_policies.conf.Settings.PASSWORD_MATCH_THRESH
             self.haystacks = haystacks
 
     def __call__(self, value):
-        needle = force_text(value)
+        needle = force_str(value)
         for haystack in self.haystacks:
             distance = self.fuzzy_substring(needle, haystack)
             longest = max(len(needle), len(haystack))
@@ -186,11 +184,11 @@ Validates that a given password does not contain consecutive characters.
         if not self.get_max_count():
             return
         consecutive_found = False
-        for _, group in itertools.groupby(force_text(value)):
+        for _, group in itertools.groupby(force_str(value)):
             if len(list(group)) > self.get_max_count():
                 consecutive_found = True
         if consecutive_found:
-            msg = ungettext("The new password contains consecutive"
+            msg = ngettext("The new password contains consecutive"
                             " characters. Only %(count)d consecutive character"
                             " is allowed.",
                             "The new password contains consecutive"
@@ -360,7 +358,7 @@ Validates that a given password is not based on a dictionary word.
         if self.dictionary:
             with open(self.dictionary) as dictionary:
                 haystacks.extend(
-                    [smart_text(x.strip()) for x in dictionary.readlines()]
+                    [smart_str(x.strip()) for x in dictionary.readlines()]
                 )
         if self.words:
             haystacks.extend(self.words)
@@ -414,7 +412,7 @@ Nl    Number, Letter
         """
 Returns this validator's error message.
 """
-        msg = ungettext("The new password must contain %d or more letter.",
+        msg = ngettext("The new password must contain %d or more letter.",
                         "The new password must contain %d or more letters.",
                         self.get_min_count()) % self.get_min_count()
         return msg
@@ -424,6 +422,78 @@ Returns this validator's error message.
 :returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_LETTERS`
 """
         return settings.PASSWORD_MIN_LETTERS
+
+
+class LowercaseLetterCountValidator(BaseCountValidator):
+    """
+Counts the occurrences of lower case letters and raises a
+:class:`~django.core.exceptions.ValidationError` if the count
+is less than :func:`~LowercaseLetterCountValidator.get_min_count`.
+"""
+    categories = ['Ll',]
+    """
+The unicode data letter categories:
+
+====  ===========
+Code  Description
+====  ===========
+Ll    Letter, Lowercase
+====  ===========
+
+"""
+    #: The validator's error code.
+    code = u"invalid_lowercaseletter_count"
+
+    def get_error_message(self):
+        """
+Returns this validator's error message.
+"""
+        msg = ngettext("The new password must contain %d or more lowercase letter.",
+                        "The new password must contain %d or more lowercase letters.",
+                        self.get_min_count()) % self.get_min_count()
+        return msg
+
+    def get_min_count(self):
+        """
+:returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_LOWERCASE_LETTERS`
+"""
+        return settings.PASSWORD_MIN_LOWERCASE_LETTERS
+
+
+class UppercaseLetterCountValidator(BaseCountValidator):
+    """
+Counts the occurrences of lower case letters and raises a
+:class:`~django.core.exceptions.ValidationError` if the count
+is less than :func:`~UppercaseLetterCountValidator.get_min_count`.
+"""
+    categories = ['Lu',]
+    """
+The unicode data letter categories:
+
+====  ===========
+Code  Description
+====  ===========
+Lu    Letter, Uppercase
+====  ===========
+
+"""
+    #: The validator's error code.
+    code = u"invalid_uppercaseletter_count"
+
+    def get_error_message(self):
+        """
+Returns this validator's error message.
+"""
+        msg = ngettext("The new password must contain %d or more uppercase letter.",
+                        "The new password must contain %d or more uppercase letters.",
+                        self.get_min_count()) % self.get_min_count()
+        return msg
+
+    def get_min_count(self):
+        """
+:returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_UPPERCASE_LETTERS`
+"""
+        return settings.PASSWORD_MIN_UPPERCASE_LETTERS
 
 
 class NotEmailValidator(object):
@@ -493,7 +563,7 @@ No    Number, Other
         """
 Returns this validator's error message.
 """
-        msg = ungettext("The new password must contain %d or more number.",
+        msg = ngettext("The new password must contain %d or more number.",
                         "The new password must contain %d or more numbers.",
                         self.get_min_count()) % self.get_min_count()
         return msg
@@ -546,7 +616,7 @@ Zl    Separator, Line
         """
 Returns this validator's error message.
 """
-        msg = ungettext("The new password must contain %d or more symbol.",
+        msg = ngettext("The new password must contain %d or more symbol.",
                         "The new password must contain %d or more symbols.",
                         self.get_min_count()) % self.get_min_count()
         return msg
@@ -558,6 +628,7 @@ Returns this validator's error message.
         return settings.PASSWORD_MIN_SYMBOLS
 
 
+
 validate_bidirectional = BidirectionalValidator()
 validate_common_sequences = CommonSequenceValidator(settings.PASSWORD_COMMON_SEQUENCES)
 validate_consecutive_count = ConsecutiveCountValidator()
@@ -566,6 +637,8 @@ validate_dictionary_words = DictionaryValidator(dictionary=settings.PASSWORD_DIC
 validate_entropy = EntropyValidator()
 validate_invalid_character = InvalidCharacterValidator()
 validate_letter_count = LetterCountValidator()
+validate_lowercase_letter_count = LowercaseLetterCountValidator()
+validate_uppercase_letter_count = UppercaseLetterCountValidator()
 validate_not_email = NotEmailValidator()
 validate_number_count = NumberCountValidator()
 validate_symbol_count = SymbolCountValidator()

@@ -24,7 +24,7 @@ PASSWORD_CHANGE_REQUIRED_ADMIN_SEARCH_FIELDS = getattr(
 PASSWORD_CHANGE_MIDDLEWARE_ALLOW_LOGOUT = getattr(
     settings, "PASSWORD_CHANGE_MIDDLEWARE_ALLOW_LOGOUT", True
 )
-#: A list of raw strings representing paths to ignore
+#: A list of raw strings or reverse lazied urls representing paths to ignore
 #: while checking if a user has to change his/her password.
 PASSWORD_CHANGE_MIDDLEWARE_EXCLUDED_PATHS = getattr(
     settings, "PASSWORD_CHANGE_MIDDLEWARE_EXCLUDED_PATHS", []
@@ -68,6 +68,8 @@ Used by the :validator:`DictionaryValidator`.
 PASSWORD_DIFFERENCE_DISTANCE = getattr(settings, "PASSWORD_DIFFERENCE_DISTANCE", 3)
 #: Don't log the person out in the middle of a session. Only do the checks at login time.
 PASSWORD_CHECK_ONLY_AT_LOGIN = getattr(settings, "PASSWORD_CHECK_ONLY_AT_LOGIN", False)
+#: Check if only staff Users have to change their password
+PASSWORD_CHECK_ONLY_FOR_STAFF_USERS = getattr(settings, "PASSWORD_CHECK_ONLY_FOR_STAFF_USERS", False)
 #: Determines after how many seconds a user is forced
 #: to change his/her password.
 #:
@@ -129,6 +131,16 @@ PASSWORD_MIN_LENGTH = getattr(settings, "PASSWORD_MIN_LENGTH", 8)
 #:
 #: Used by :validator:`LetterCountValidator`.
 PASSWORD_MIN_LETTERS = getattr(settings, "PASSWORD_MIN_LETTERS", 3)
+#: Specifies the minimum amount of required lowercase letters in a
+#: password.
+#:
+#: Used by :validator:`LowercaseLetterCountValidator`.
+PASSWORD_MIN_LOWERCASE_LETTERS = getattr(settings, "PASSWORD_MIN_LOWERCASE_LETTERS", 0)
+#: Specifies the minimum amount of required uppercase letters in a
+#: password.
+#:
+#: Used by :validator:`UppercaseLetterCountValidator`.
+PASSWORD_MIN_UPPERCASE_LETTERS = getattr(settings, "PASSWORD_MIN_UPPERCASE_LETTERS", 0)
 #: Specifies the minimum amount of required numbers in a
 #: password.
 #:
@@ -171,3 +183,11 @@ REDIRECT_FIELD_NAME = getattr(settings, "REDIRECT_FIELD_NAME", auth.REDIRECT_FIE
 #: A path to a template to generate a 403 error page
 #: in the root of the template directory.
 TEMPLATE_403_PAGE = getattr(settings, "TEMPLATE_403_PAGE", "403.html")
+
+
+PASSWORD_RESET_TIMEOUT_DAYS = 1
+
+PASSWORD_POLICIES_LAST_CHECKED_SESSION_KEY = "_password_policies_last_checked"
+PASSWORD_POLICIES_EXPIRED_SESSION_KEY = "_password_policies_expired"
+PASSWORD_POLICIES_LAST_CHANGED_SESSION_KEY = "_password_policies_last_changed"
+PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY = "_password_policies_change_required"
