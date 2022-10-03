@@ -11,7 +11,6 @@ except ImportError:
 
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -29,6 +28,7 @@ from password_policies.forms import (
     PasswordResetForm,
 )
 from password_policies.utils import string_to_datetime, datetime_to_string
+from django.utils.encoding import force_str
 
 class LoggedOutMixin(View):
     """
@@ -176,7 +176,7 @@ class PasswordResetConfirmView(AdminSiteContextMixin, LoggedOutMixin, FormView):
         self.validlink = False
         if self.uidb64 and self.timestamp and self.signature:
             try:
-                uid = force_text(urlsafe_base64_decode(self.uidb64))
+                uid = force_str(urlsafe_base64_decode(self.uidb64))
                 self.user = get_user_model().objects.get(id=uid)
             except (ValueError, get_user_model().DoesNotExist):
                 self.user = None
