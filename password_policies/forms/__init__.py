@@ -23,11 +23,11 @@ from django.template.defaultfilters import unordered_list
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.safestring import mark_safe
-from django.utils.translation import ungettext, ugettext, ugettext_lazy as _
 
 from password_policies.conf import settings
 from password_policies.forms.fields import PasswordPoliciesField
 from password_policies.models import PasswordChangeRequired, PasswordHistory
+from django.utils.translation import gettext, gettext_lazy as _, ngettext
 
 
 class PasswordPoliciesForm(forms.Form):
@@ -63,60 +63,60 @@ class PasswordPoliciesForm(forms.Form):
         help_text_chunks = []
         if settings.PASSWORD_MIN_LENGTH:
             help_text_chunks.append(
-                ungettext("must be at least 1 character long",
+                ngettext("must be at least 1 character long",
                           "must be at least %(count)s characters long",
                           settings.PASSWORD_MIN_LENGTH
                           ) % {"count": settings.PASSWORD_MIN_LENGTH}
             )
         if settings.PASSWORD_MAX_CONSECUTIVE:
             help_text_chunks.append(
-                ugettext("must not contain %(count)s or more consecutive identical characters")
+                gettext("must not contain %(count)s or more consecutive identical characters")
                 % {"count": settings.PASSWORD_MAX_CONSECUTIVE}
             )
         if settings.PASSWORD_MIN_LETTERS:
             help_text_chunks.append(
-                ungettext("must contain at least 1 alphanumeric character",
+                ngettext("must contain at least 1 alphanumeric character",
                           "must contain at least %(count)s alphanumeric characters",
                           settings.PASSWORD_MIN_LETTERS
                           ) % {"count": settings.PASSWORD_MIN_LETTERS}
             )
         if settings.PASSWORD_MIN_LOWERCASE_LETTERS:
             help_text_chunks.append(
-                ungettext("must contain at least 1 lowercase character",
+                ngettext("must contain at least 1 lowercase character",
                           "must contain at least %(count)s lowercase characters",
                           settings.PASSWORD_MIN_LOWERCASE_LETTERS
                           ) % {"count": settings.PASSWORD_MIN_LOWERCASE_LETTERS}
             )
         if settings.PASSWORD_MIN_UPPERCASE_LETTERS:
             help_text_chunks.append(
-                ungettext("must contain at least 1 uppercase character",
+                ngettext("must contain at least 1 uppercase character",
                           "must contain at least %(count)s uppercase characters",
                           settings.PASSWORD_MIN_UPPERCASE_LETTERS
                           ) % {"count": settings.PASSWORD_MIN_UPPERCASE_LETTERS}
             )
         if settings.PASSWORD_MIN_NUMBERS:
             help_text_chunks.append(
-                ungettext("must contain at least 1 number",
+                ngettext("must contain at least 1 number",
                           "must contain at least %(count)s numbers",
                           settings.PASSWORD_MIN_NUMBERS
                           ) % {"count": settings.PASSWORD_MIN_NUMBERS}
             )
         if settings.PASSWORD_MIN_SYMBOLS:
             help_text_chunks.append(
-                ungettext("must contain at least 1 special character (e.g. @#$%%^&.)",
+                ngettext("must contain at least 1 special character (e.g. @#$%%^&.)",
                           "must contain at least %(count)s special characters (e.g. @#$%%^&.)",
                           settings.PASSWORD_MIN_SYMBOLS
                           ) % {"count": settings.PASSWORD_MIN_SYMBOLS}
             )
         if settings.PASSWORD_USE_HISTORY and settings.PASSWORD_HISTORY_COUNT:
             help_text_chunks.append(
-                ungettext("must differ from your last password",
+                ngettext("must differ from your last password",
                           "must differ from your last %(count)s passwords",
                           settings.PASSWORD_HISTORY_COUNT
                           ) % {"count": settings.PASSWORD_HISTORY_COUNT}
             )
         self.fields['new_password1'].help_text = (
-            "<div class=\"new_password1-help-text\">" + ugettext(
+            "<div class=\"new_password1-help-text\">" + gettext(
             "The new password must have the following characteristics:") + "</div>"
             + unordered_list(help_text_chunks)
         )
