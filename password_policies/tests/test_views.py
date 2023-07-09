@@ -1,5 +1,5 @@
 from django.core import signing
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls.base import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -78,6 +78,31 @@ class PasswordChangeViewsTestCase(TestCase):
             reverse("password_reset_confirm", args=(uid, timestamp, signature))
         )
         assert res.status_code == 200
+
+    @override_settings(AUTH_PASSWORD_VALIDATORS=[
+        {
+            "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+            "OPTIONS": {"min_length": 20},
+        }
+    ])
+    def test_password_change_wrong_validators(self):
+        """
+        A ``POST`` to the ``change_email_create`` view with valid data properly
+        changes the user's password, creates a new password history entry
+        for the user and issues a redirect.
+        """
+        data = {
+            "old_password": passwords[-1],
+            "new_password1": "Chah+pher9k",
+            "new_password2": "Chah+pher9k",
+        }
+        msg = 'This password is too short. It must contain at least 20 characters.'
+        self.client.login(username="alice", password=data["old_password"])
+        response = self.client.post(reverse("password_change"), data=data)
+        self.assertEqual(response.status_code, 200)
+        self.failIf(response.context["form"].is_valid())
+        self.assertFormError(response, "form", field="new_password2", errors=msg)
+        self.client.logout()
 
     def test_password_reset_complete(self):
         res = self.client.get(
