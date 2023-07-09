@@ -1,4 +1,7 @@
-from django.conf.urls import url
+try:
+    from django.conf.urls import url
+except ImportError:
+    from django.urls import re_path as url
 
 try:
     # patterns was deprecated in Django 1.8
