@@ -104,6 +104,14 @@ class PasswordChangeViewsTestCase(TestCase):
         self.assertFormError(response, "form", field="new_password2", errors=msg)
         self.client.logout()
 
+    def test_password_reset_complete(self):
+        res = self.client.get(
+            reverse(
+                "password_reset_complete",
+            )
+        )
+        assert res.status_code == 200
+
 
 class TestLOMixinView(TestCase):
     def test_lomixinview(self):
