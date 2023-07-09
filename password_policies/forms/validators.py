@@ -1,13 +1,16 @@
-from __future__ import division
 import itertools
 import math
-import unicodedata
 import re
 import stringprep
+import unicodedata
 
 from django.core.exceptions import ValidationError
 from django.utils.encoding import smart_text
-from django.utils.encoding import force_text
+
+try:
+    from django.utils.encoding import force_text
+except ImportError:
+    from django.utils.encoding import force_str as force_text
 try:
     # Deprecated in Django 3.0
     from django.utils.translation import ugettext_lazy as _
@@ -25,16 +28,16 @@ except NameError:
     pass
 else:
     # alias range to xrange for Python 2
-    range = xrange
+    range = xrange  # noqa
 
 
-class BaseCountValidator(object):
+class BaseCountValidator:
     """
-Counts the occurrences of characters of a
-:py:func:`unicodedata.category` and raises a
-:class:`~django.core.exceptions.ValidationError` if the count
-is less than :py:func:`~BaseCountValidator.get_min_count`.
-"""
+    Counts the occurrences of characters of a
+    :py:func:`unicodedata.category` and raises a
+    :class:`~django.core.exceptions.ValidationError` if the count
+    is less than :py:func:`~BaseCountValidator.get_min_count`."""
+
     def __call__(self, value):
         if not self.get_min_count():
             return
@@ -55,17 +58,17 @@ is less than :py:func:`~BaseCountValidator.get_min_count`.
         raise NotImplementedError
 
 
-class BaseRFC4013Validator(object):
+class BaseRFC4013Validator:
     """
-Validates that a given password passes the requirements as
-defined in `RFC 4013`_.
+    Validates that a given password passes the requirements as
+    defined in `RFC 4013`_.
 
-.. _`RFC 4013`: http://tools.ietf.org/html/rfc4013
-"""
-    first = u''
+    .. _`RFC 4013`: http://tools.ietf.org/html/rfc4013"""
+
+    first = ""
     invalid = True
     l_cat = False
-    last = u''
+    last = ""
     r_and_al_cat = False
 
     def __call__(self, value):
@@ -77,11 +80,17 @@ defined in `RFC 4013`_.
     def _process(self, value):
         for code in force_text(value):
             # TODO: Is this long enough?
-            if stringprep.in_table_c12(code) or stringprep.in_table_c21_c22(code) or \
-                stringprep.in_table_c3(code) or stringprep.in_table_c4(code) or \
-                stringprep.in_table_c5(code) or stringprep.in_table_c6(code) or \
-                stringprep.in_table_c7(code) or stringprep.in_table_c8(code) or \
-                    stringprep.in_table_c9(code):
+            if (
+                stringprep.in_table_c12(code)
+                or stringprep.in_table_c21_c22(code)
+                or stringprep.in_table_c3(code)
+                or stringprep.in_table_c4(code)
+                or stringprep.in_table_c5(code)
+                or stringprep.in_table_c6(code)
+                or stringprep.in_table_c7(code)
+                or stringprep.in_table_c8(code)
+                or stringprep.in_table_c9(code)
+            ):
                 self.invalid = False
             if stringprep.in_table_d1(code):
                 self.r_and_al_cat = True
@@ -89,14 +98,15 @@ defined in `RFC 4013`_.
                 self.l_cat = True
 
 
-class BaseSimilarityValidator(object):
+class BaseSimilarityValidator:
     """
-Compares a `needle` to a `haystack` (list of strings) and calculates
-a similarity between 0.0 and 1.0.
+    Compares a `needle` to a `haystack` (list of strings) and calculates
+    a similarity between 0.0 and 1.0.
 
-Raises a :class:`~django.core.exceptions.ValidationError` if the similarity
-is greater than :py:attr:`~password_policies.conf.Settings.PASSWORD_MATCH_THRESHOLD`.
-"""
+    Raises a :class:`~django.core.exceptions.ValidationError` if the similarity
+    is greater than :py:attr:`~password_policies.conf.Settings.PASSWORD_MATCH_THRESHOLD`.
+    """
+
     # Taken from django-passwords
 
     #: A list of strings.
@@ -115,7 +125,8 @@ is greater than :py:attr:`~password_policies.conf.Settings.PASSWORD_MATCH_THRESH
             if similarity >= self.get_threshold():
                 raise ValidationError(
                     self.message % {"haystacks": ", ".join(self.haystacks)},
-                    code=self.code)
+                    code=self.code,
+                )
 
     def fuzzy_substring(self, needle, haystack):
         needle, haystack = needle.lower(), haystack.lower()
@@ -131,92 +142,97 @@ is greater than :py:attr:`~password_policies.conf.Settings.PASSWORD_MATCH_THRESH
         for i in range(0, m):
             row2 = [i + 1]
             for j in range(0, n):
-                cost = (needle[i] != haystack[j])
+                cost = needle[i] != haystack[j]
                 row2.append(min(row1[j + 1] + 1, row2[j] + 1, row1[j] + cost))
             row1 = row2
         return min(row1)
 
     def get_threshold(self):
         """
-:returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MATCH_THRESHOLD`.
-"""
+        :returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MATCH_THRESHOLD`.
+        """
         return settings.PASSWORD_MATCH_THRESHOLD
 
 
 class BidirectionalValidator(BaseRFC4013Validator):
     """
-Validates that
+    Validates that
 
-* a string containing any RandALCat character does not contain any
-  LCat character.
-* a string containing any RandALCat character does start and end
-  with a RandALCat character.
+    * a string containing any RandALCat character does not contain any
+      LCat character.
+    * a string containing any RandALCat character does start and end
+      with a RandALCat character.
 
-For more information read `RFC 4013, section 2.3`_.
+    For more information read `RFC 4013, section 2.3`_.
 
-.. _`RFC 4013, section 2.3`: http://tools.ietf.org/html/rfc4013#section-2.3
-"""
+    .. _`RFC 4013, section 2.3`: http://tools.ietf.org/html/rfc4013#section-2.3"""
+
     #: The validator's error code.
-    code = u"invalid_bidirectional"
+    code = "invalid_bidirectional"
     #: The validator's error message.
     message = _("The new password contains ambiguous bidirectional characters.")
 
     def __call__(self, value):
-        super(BidirectionalValidator, self).__call__(value)
+        super().__call__(value)
         if self.r_and_al_cat:
-            if self.l_cat or not stringprep.in_table_d1(self.first) or not stringprep.in_table_d1(self.last):
+            if (
+                self.l_cat
+                or not stringprep.in_table_d1(self.first)
+                or not stringprep.in_table_d1(self.last)
+            ):
                 raise ValidationError(self.message, code=self.code)
 
 
 class CommonSequenceValidator(BaseSimilarityValidator):
     """
-Validates that a given password is not based on a common sequence of characters.
-"""
+    Validates that a given password is not based on a common sequence of characters."""
+
     # Taken from django-passwords
 
     #: The validator's error code.
-    code = u"invalid_common_sequence"
+    code = "invalid_common_sequence"
     #: The validator's error message.
     message = _("The new password is based on a common sequence of characters.")
 
 
-class ConsecutiveCountValidator(object):
+class ConsecutiveCountValidator:
     """
-Validates that a given password does not contain consecutive characters.
-"""
+    Validates that a given password does not contain consecutive characters."""
+
     #: The validator's error code.
-    code = u"invalid_consecutive_count"
+    code = "invalid_consecutive_count"
 
     def __call__(self, value):
         if not self.get_max_count():
             return
         consecutive_found = False
-        for _, group in itertools.groupby(force_text(value)):
+        for _ign, group in itertools.groupby(force_text(value)):
             if len(list(group)) > self.get_max_count():
                 consecutive_found = True
         if consecutive_found:
-            msg = ungettext("The new password contains consecutive"
-                            " characters. Only %(count)d consecutive character"
-                            " is allowed.",
-                            "The new password contains consecutive"
-                            " characters. Only %(count)d consecutive characters"
-                            " are allowed.",
-                            self.get_max_count()) % {'count': self.get_max_count()}
+            msg = ungettext(
+                "The new password contains consecutive"
+                " characters. Only %(count)d consecutive character"
+                " is allowed.",
+                "The new password contains consecutive"
+                " characters. Only %(count)d consecutive characters"
+                " are allowed.",
+                self.get_max_count(),
+            ) % {"count": self.get_max_count()}
             raise ValidationError(msg, code=self.code)
 
     def get_max_count(self):
         """
-:returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MAX_CONSECUTIVE`
-"""
+        :returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MAX_CONSECUTIVE`"""
         return settings.PASSWORD_MAX_CONSECUTIVE
 
 
-class CracklibValidator(object):
+class CracklibValidator:
     """
-Validates a given password using Python bindings for cracklib.
-"""
+    Validates a given password using Python bindings for cracklib."""
+
     #: The validator's error code.
-    code = u"invalid_cracklib"
+    code = "invalid_cracklib"
     #: This argument will change the default of 10 for the number
     #: of characters in the new password that must not be present
     #: in the old password. In addition, if 1/2 of the characters
@@ -259,8 +275,15 @@ Validates a given password using Python bindings for cracklib.
             message = _("Please choose a different password, %s." % reason)
             raise ValidationError(message, code=self.code)
 
-    def __init__(self, diff_ok=0, dig_credit=0, low_credit=0,
-                 min_length=0, oth_credit=0, up_credit=0):
+    def __init__(
+        self,
+        diff_ok=0,
+        dig_credit=0,
+        low_credit=0,
+        min_length=0,
+        oth_credit=0,
+        up_credit=0,
+    ):
         self.diff_ok = diff_ok
         self.dig_credit = dig_credit
         self.low_credit = low_credit
@@ -269,15 +292,15 @@ Validates a given password using Python bindings for cracklib.
         self.up_credit = up_credit
 
 
-class EntropyValidator(object):
+class EntropyValidator:
     """
-Validates that a password contains varied characters by calculating
-the Shannon entropy of a password.
-"""
+    Validates that a password contains varied characters by calculating
+    the Shannon entropy of a password."""
+
     # Taken from revelation
 
     #: The validator's error code.
-    code = u"invalid_entropy"
+    code = "invalid_entropy"
     #: Specifies the minimum entropy of long passwords
     #: (len(password) >= 100). Defaults to
     #: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_ENTROPY_LONG`.
@@ -306,16 +329,20 @@ the Shannon entropy of a password.
             ent_quotient = ent / idealent
         except ZeroDivisionError:
             ent_quotient = 0
-        if (pwlen < 100 and ent_quotient < self.short_min_entropy) or (pwlen >= 100 and ent < self.long_min_entropy):
+        if (pwlen < 100 and ent_quotient < self.short_min_entropy) or (
+            pwlen >= 100 and ent < self.long_min_entropy
+        ):
             raise ValidationError(self.message, code=self.code)
 
     def entropy(self, string):
         # Calculates the Shannon entropy of a string
         #
         # get probability of chars in string
-        prob = [float(string.count(c)) / len(string) for c in dict.fromkeys(list(string))]
+        prob = [
+            float(string.count(c)) / len(string) for c in dict.fromkeys(list(string))
+        ]
         # calculate the entropy
-        entropy = - sum([p * math.log(p) / math.log(2.0) for p in prob])
+        entropy = -sum(p * math.log(p) / math.log(2.0) for p in prob)
         return entropy
 
     def entropy_ideal(self, length):
@@ -326,33 +353,33 @@ the Shannon entropy of a password.
 
 class DictionaryValidator(BaseSimilarityValidator):
     """
-Validates that a given password is not based on a dictionary word.
+    Validates that a given password is not based on a dictionary word.
 
-.. note::
-    If :py:attr:`~DictionaryValidator.dictionary`
-    AND :py:attr:`~DictionaryValidator.words` are empty or set
-    to None validation is not performed.
+    .. note::
+        If :py:attr:`~DictionaryValidator.dictionary`
+        AND :py:attr:`~DictionaryValidator.words` are empty or set
+        to None validation is not performed.
 
-.. warning::
-    This validator is very time consuming and validation
-    duration depends on the amount of lines in the dictionary
-    file. The larger the dictionary file, the longer validation
-    takes!
-"""
+    .. warning::
+        This validator is very time consuming and validation
+        duration depends on the amount of lines in the dictionary
+        file. The larger the dictionary file, the longer validation
+        takes!"""
+
     # Taken from django-passwords
 
     #: The validator's error code.
-    code = u"invalid_dictionary_word"
+    code = "invalid_dictionary_word"
     #: A path to a file with one word per line. Defaults to
     #: :py:attr:`password_policies.conf.Settings.PASSWORD_DICTIONARY`.
-    dictionary = ''
+    dictionary = ""
     #: The validator's error message.
     message = _("The new password is based on a dictionary word.")
     #: A list of unicode strings. Defaults to
     #: :py:attr:`password_policies.conf.Settings.PASSWORD_WORDS`.
     words = []
 
-    def __init__(self, dictionary='', words=[]):
+    def __init__(self, dictionary="", words=[]):
         if not dictionary:
             self.dictionary = settings.PASSWORD_DICTIONARY
         else:
@@ -369,34 +396,34 @@ Validates that a given password is not based on a dictionary word.
                 )
         if self.words:
             haystacks.extend(self.words)
-        super(DictionaryValidator, self).__init__(haystacks=haystacks)
+        super().__init__(haystacks=haystacks)
 
 
 class InvalidCharacterValidator(BaseRFC4013Validator):
     """
-Validates that a given password does not contain invalid unicode
-characters as defined in `RFC 4013, section 2.3`_.
+    Validates that a given password does not contain invalid unicode
+    characters as defined in `RFC 4013, section 2.3`_.
 
-.. _`RFC 4013, section 2.3`: http://tools.ietf.org/html/rfc4013#section-2.3
-"""
+    .. _`RFC 4013, section 2.3`: http://tools.ietf.org/html/rfc4013#section-2.3"""
+
     #: The validator's error code.
-    code = u"invalid_unicode"
+    code = "invalid_unicode"
     #: The validator's error message.
     message = _("The new password contains invalid unicode characters.")
 
     def __call__(self, value):
-        super(InvalidCharacterValidator, self).__call__(value)
+        super().__call__(value)
         if self.invalid:
             raise ValidationError(self.message, code=self.code)
 
 
 class LetterCountValidator(BaseCountValidator):
     """
-Counts the occurrences of letters and raises a
-:class:`~django.core.exceptions.ValidationError` if the count
-is less than :func:`~LetterCountValidator.get_min_count`.
-"""
-    categories = ['LC', 'Ll', 'Lu', 'Lt', 'Lo', 'Nl']
+    Counts the occurrences of letters and raises a
+    :class:`~django.core.exceptions.ValidationError` if the count
+    is less than :func:`~LetterCountValidator.get_min_count`."""
+
+    categories = ["LC", "Ll", "Lu", "Lt", "Lo", "Nl"]
     """
 The unicode data letter categories:
 
@@ -413,31 +440,36 @@ Nl    Number, Letter
 
 """
     #: The validator's error code.
-    code = u"invalid_letter_count"
+    code = "invalid_letter_count"
 
     def get_error_message(self):
         """
-Returns this validator's error message.
-"""
-        msg = ungettext("The new password must contain %d or more letter.",
-                        "The new password must contain %d or more letters.",
-                        self.get_min_count()) % self.get_min_count()
+        Returns this validator's error message."""
+        msg = (
+            ungettext(
+                "The new password must contain %d or more letter.",
+                "The new password must contain %d or more letters.",
+                self.get_min_count(),
+            )
+            % self.get_min_count()
+        )
         return msg
 
     def get_min_count(self):
         """
-:returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_LETTERS`
-"""
+        :returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_LETTERS`"""
         return settings.PASSWORD_MIN_LETTERS
 
 
 class LowercaseLetterCountValidator(BaseCountValidator):
     """
-Counts the occurrences of lower case letters and raises a
-:class:`~django.core.exceptions.ValidationError` if the count
-is less than :func:`~LowercaseLetterCountValidator.get_min_count`.
-"""
-    categories = ['Ll',]
+    Counts the occurrences of lower case letters and raises a
+    :class:`~django.core.exceptions.ValidationError` if the count
+    is less than :func:`~LowercaseLetterCountValidator.get_min_count`."""
+
+    categories = [
+        "Ll",
+    ]
     """
 The unicode data letter categories:
 
@@ -449,31 +481,37 @@ Ll    Letter, Lowercase
 
 """
     #: The validator's error code.
-    code = u"invalid_lowercaseletter_count"
+    code = "invalid_lowercaseletter_count"
 
     def get_error_message(self):
         """
-Returns this validator's error message.
-"""
-        msg = ungettext("The new password must contain %d or more lowercase letter.",
-                        "The new password must contain %d or more lowercase letters.",
-                        self.get_min_count()) % self.get_min_count()
+        Returns this validator's error message."""
+        msg = (
+            ungettext(
+                "The new password must contain %d or more lowercase letter.",
+                "The new password must contain %d or more lowercase letters.",
+                self.get_min_count(),
+            )
+            % self.get_min_count()
+        )
         return msg
 
     def get_min_count(self):
         """
-:returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_LOWERCASE_LETTERS`
-"""
+        :returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_LOWERCASE_LETTERS`
+        """
         return settings.PASSWORD_MIN_LOWERCASE_LETTERS
 
 
 class UppercaseLetterCountValidator(BaseCountValidator):
     """
-Counts the occurrences of lower case letters and raises a
-:class:`~django.core.exceptions.ValidationError` if the count
-is less than :func:`~UppercaseLetterCountValidator.get_min_count`.
-"""
-    categories = ['Lu',]
+    Counts the occurrences of lower case letters and raises a
+    :class:`~django.core.exceptions.ValidationError` if the count
+    is less than :func:`~UppercaseLetterCountValidator.get_min_count`."""
+
+    categories = [
+        "Lu",
+    ]
     """
 The unicode data letter categories:
 
@@ -485,56 +523,61 @@ Lu    Letter, Uppercase
 
 """
     #: The validator's error code.
-    code = u"invalid_uppercaseletter_count"
+    code = "invalid_uppercaseletter_count"
 
     def get_error_message(self):
         """
-Returns this validator's error message.
-"""
-        msg = ungettext("The new password must contain %d or more uppercase letter.",
-                        "The new password must contain %d or more uppercase letters.",
-                        self.get_min_count()) % self.get_min_count()
+        Returns this validator's error message."""
+        msg = (
+            ungettext(
+                "The new password must contain %d or more uppercase letter.",
+                "The new password must contain %d or more uppercase letters.",
+                self.get_min_count(),
+            )
+            % self.get_min_count()
+        )
         return msg
 
     def get_min_count(self):
         """
-:returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_UPPERCASE_LETTERS`
-"""
+        :returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_UPPERCASE_LETTERS`
+        """
         return settings.PASSWORD_MIN_UPPERCASE_LETTERS
 
 
-class NotEmailValidator(object):
+class NotEmailValidator:
     """
-Validates that a given password is not similar to an email address.
-"""
+    Validates that a given password is not similar to an email address."""
+
     #: The validator's error code.
-    code = u"invalid_email_used"
+    code = "invalid_email_used"
     #: The validator's error message.
     message = _("The new password is similar to an email address.")
     user_regex = re.compile(
         r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*$"  # dot-atom
         r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-\011\013\014\016-\177])*"$)',  # quoted-string
-        re.IGNORECASE)
+        re.IGNORECASE,
+    )
     domain_regex = re.compile(
-        r'(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?$)'  # domain
+        r"(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?$)"  # domain
         # literal form, ipv4 address (SMTP 4.1.3)
-        r'|^\[(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}\]$',
-        re.IGNORECASE)
+        r"|^\[(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}\]$",
+        re.IGNORECASE,
+    )
 
     def __call__(self, value):
         """
-Validates that the input does not match the regular expression.
-"""
+        Validates that the input does not match the regular expression."""
         user_part_found = False
         domain_part_found = False
-        if value and '@' in value:
-            user_part, domain_part = value.rsplit('@', 1)
+        if value and "@" in value:
+            user_part, domain_part = value.rsplit("@", 1)
             if self.user_regex.match(user_part):
                 user_part_found = True
             if not self.domain_regex.match(domain_part):
                 # Try for possible IDN domain-part
                 try:
-                    domain_part = domain_part.encode('idna').decode('ascii')
+                    domain_part = domain_part.encode("idna").decode("ascii")
                     if self.domain_regex.match(domain_part):
                         domain_part_found = True
                 except UnicodeError:
@@ -547,11 +590,11 @@ Validates that the input does not match the regular expression.
 
 class NumberCountValidator(BaseCountValidator):
     """
-Counts the occurrences of numbers (digits, etc.) and raises a
-:class:`~django.core.exceptions.ValidationError` if the count
-is less than :py:func:`~NumberCountValidator.get_min_count`.
-"""
-    categories = ['Nd', 'No']
+    Counts the occurrences of numbers (digits, etc.) and raises a
+    :class:`~django.core.exceptions.ValidationError` if the count
+    is less than :py:func:`~NumberCountValidator.get_min_count`."""
+
+    categories = ["Nd", "No"]
     """
 The unicode data number categories:
 
@@ -564,33 +607,52 @@ No    Number, Other
 
 """
     #: The validator's error code.
-    code = u"invalid_number_count"
+    code = "invalid_number_count"
 
     def get_error_message(self):
         """
-Returns this validator's error message.
-"""
-        msg = ungettext("The new password must contain %d or more number.",
-                        "The new password must contain %d or more numbers.",
-                        self.get_min_count()) % self.get_min_count()
+        Returns this validator's error message."""
+        msg = (
+            ungettext(
+                "The new password must contain %d or more number.",
+                "The new password must contain %d or more numbers.",
+                self.get_min_count(),
+            )
+            % self.get_min_count()
+        )
         return msg
 
     def get_min_count(self):
         """
-:returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_NUMBERS`
-"""
+        :returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_NUMBERS`"""
         return settings.PASSWORD_MIN_NUMBERS
 
 
 class SymbolCountValidator(BaseCountValidator):
     """
-Counts the occurrences of other characters than letters and numbers,
-except line breaks, and raises a
-:class:`~django.core.exceptions.ValidationError` if the count
-is less than :py:func:`~SymbolCountValidator.get_min_count`.
-"""
-    categories = ['Lm', 'Mc', 'Me', 'Mn', 'Pc', 'Pd', 'Pe', 'Pf',
-                  'Pi', 'Po', 'Ps', 'Sc', 'Sk', 'Sm', 'So', 'Zl']
+    Counts the occurrences of other characters than letters and numbers,
+    except line breaks, and raises a
+    :class:`~django.core.exceptions.ValidationError` if the count
+    is less than :py:func:`~SymbolCountValidator.get_min_count`."""
+
+    categories = [
+        "Lm",
+        "Mc",
+        "Me",
+        "Mn",
+        "Pc",
+        "Pd",
+        "Pe",
+        "Pf",
+        "Pi",
+        "Po",
+        "Ps",
+        "Sc",
+        "Sk",
+        "Sm",
+        "So",
+        "Zl",
+    ]
     """
 The unicode data symbol categories:
 
@@ -617,23 +679,25 @@ Zl    Separator, Line
 
 """
     #: The validator's error code.
-    code = u"invalid_symbol_count"
+    code = "invalid_symbol_count"
 
     def get_error_message(self):
         """
-Returns this validator's error message.
-"""
-        msg = ungettext("The new password must contain %d or more symbol.",
-                        "The new password must contain %d or more symbols.",
-                        self.get_min_count()) % self.get_min_count()
+        Returns this validator's error message."""
+        msg = (
+            ungettext(
+                "The new password must contain %d or more symbol.",
+                "The new password must contain %d or more symbols.",
+                self.get_min_count(),
+            )
+            % self.get_min_count()
+        )
         return msg
 
     def get_min_count(self):
         """
-:returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_SYMBOLS`
-"""
+        :returns: :py:attr:`password_policies.conf.Settings.PASSWORD_MIN_SYMBOLS`"""
         return settings.PASSWORD_MIN_SYMBOLS
-
 
 
 validate_bidirectional = BidirectionalValidator()
