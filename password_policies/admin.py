@@ -1,5 +1,9 @@
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+try:
+    # Deprecated in Django 3.0
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    from django.utils.translation import gettext_lazy as _
 
 from password_policies.conf import settings
 from password_policies.models import PasswordChangeRequired, PasswordHistory
