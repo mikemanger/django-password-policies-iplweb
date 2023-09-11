@@ -1,12 +1,14 @@
 try:
-    from django.conf.urls import url
-except ImportError:
     from django.urls import re_path as url
+except ImportError:
+    # Before Django 2.0
+    from django.conf.urls import url
 
-try:
+import django.conf.urls
+if hasattr(django.conf.urls, 'patterns'):
     # patterns was deprecated in Django 1.8
     from django.conf.urls import patterns
-except ImportError:
+else:
     # patterns is unavailable in Django 1.10+
     patterns = False
 
