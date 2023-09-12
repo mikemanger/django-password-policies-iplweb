@@ -7,21 +7,23 @@ import unicodedata
 from django.core.exceptions import ValidationError
 
 try:
-    from django.utils.encoding import smart_text
-except ImportError:
     from django.utils.encoding import smart_str as smart_text
+except ImportError:
+    # Before in Django 2.0
+    from django.utils.encoding import smart_text
 
 try:
-    from django.utils.encoding import force_text
-except ImportError:
     from django.utils.encoding import force_str as force_text
-try:
-    # Deprecated in Django 3.0
-    from django.utils.translation import ugettext_lazy as _
-    from django.utils.translation import ungettext
 except ImportError:
+    # Before in Django 2.0
+    from django.utils.encoding import force_text
+try:
     from django.utils.translation import gettext_lazy as _
     from django.utils.translation import ngettext as ungettext
+except ImportError:
+    # Before in Django 3.0
+    from django.utils.translation import ugettext_lazy as _
+    from django.utils.translation import ungettext
 
 from password_policies.conf import settings
 
@@ -329,9 +331,9 @@ class EntropyValidator:
                 return
         ent = self.entropy(value)
         idealent = self.entropy_ideal(pwlen)
-        try:
+        if idealent:
             ent_quotient = ent / idealent
-        except ZeroDivisionError:
+        else:
             ent_quotient = 0
         if (pwlen < 100 and ent_quotient < self.short_min_entropy) or (
             pwlen >= 100 and ent < self.long_min_entropy
