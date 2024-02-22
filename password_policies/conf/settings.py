@@ -33,7 +33,7 @@ PASSWORD_CHANGE_MIDDLEWARE_EXCLUDED_PATHS = getattr(
 #: be performed if the user's password has expired.
 #:
 #: Defaults to 1 hour.
-PASSWORD_CHECK_SECONDS = getattr(settings, "PASSWORD_CHECK_SECONDS", 60 ** 2)
+PASSWORD_CHECK_SECONDS = getattr(settings, "PASSWORD_CHECK_SECONDS", 60**2)
 
 #: Specifies a list of common sequences to attempt to
 #: match a password against.
@@ -41,15 +41,15 @@ PASSWORD_COMMON_SEQUENCES = getattr(
     settings,
     "PASSWORD_COMMON_SEQUENCES",
     [
-        u"0123456789",
-        u"`1234567890-=",
-        u"~!@#$%^&*()_+",
-        u"abcdefghijklmnopqrstuvwxyz",
-        u"quertyuiop[]\\asdfghjkl;'zxcvbnm,./",
-        u'quertyuiop{}|asdfghjkl;"zxcvbnm<>?',
-        u"quertyuiopasdfghjklzxcvbnm",
-        u"1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-['=]\\",
-        u"qazwsxedcrfvtgbyhnujmikolp",
+        "0123456789",
+        "`1234567890-=",
+        "~!@#$%^&*()_+",
+        "abcdefghijklmnopqrstuvwxyz",
+        "quertyuiop[]\\asdfghjkl;'zxcvbnm,./",
+        'quertyuiop{}|asdfghjkl;"zxcvbnm<>?',
+        "quertyuiopasdfghjklzxcvbnm",
+        "1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-['=]\\",
+        "qazwsxedcrfvtgbyhnujmikolp",
     ],
 )
 PASSWORD_DICTIONARY = getattr(settings, "PASSWORD_DICTIONARY", None)
@@ -69,12 +69,14 @@ PASSWORD_DIFFERENCE_DISTANCE = getattr(settings, "PASSWORD_DIFFERENCE_DISTANCE",
 #: Don't log the person out in the middle of a session. Only do the checks at login time.
 PASSWORD_CHECK_ONLY_AT_LOGIN = getattr(settings, "PASSWORD_CHECK_ONLY_AT_LOGIN", False)
 #: Check if only staff Users have to change their password
-PASSWORD_CHECK_ONLY_FOR_STAFF_USERS = getattr(settings, "PASSWORD_CHECK_ONLY_FOR_STAFF_USERS", False)
+PASSWORD_CHECK_ONLY_FOR_STAFF_USERS = getattr(
+    settings, "PASSWORD_CHECK_ONLY_FOR_STAFF_USERS", False
+)
 #: Determines after how many seconds a user is forced
 #: to change his/her password.
 #:
 #: Defaults to 60 days.
-PASSWORD_DURATION_SECONDS = getattr(settings, "PASSWORD_DURATION_SECONDS", 24 * 60 ** 3)
+PASSWORD_DURATION_SECONDS = getattr(settings, "PASSWORD_DURATION_SECONDS", 24 * 60 * 3)
 #: The field on the user model as defined by settings.AUTH_USER_MODEL
 #: where the password is stored.
 PASSWORD_MODEL_FIELD = getattr(settings, "PASSWORD_MODEL_FIELD", "password")
@@ -184,8 +186,7 @@ REDIRECT_FIELD_NAME = getattr(settings, "REDIRECT_FIELD_NAME", auth.REDIRECT_FIE
 #: in the root of the template directory.
 TEMPLATE_403_PAGE = getattr(settings, "TEMPLATE_403_PAGE", "403.html")
 
-
-PASSWORD_RESET_TIMEOUT_DAYS = 1
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 1
 
 PASSWORD_POLICIES_LAST_CHECKED_SESSION_KEY = "_password_policies_last_checked"
 PASSWORD_POLICIES_EXPIRED_SESSION_KEY = "_password_policies_expired"

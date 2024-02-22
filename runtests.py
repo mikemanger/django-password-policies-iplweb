@@ -9,7 +9,7 @@ from django.test.utils import get_runner
 
 
 def runtests(*test_args):
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'password_policies.tests.test_settings'
+    os.environ["DJANGO_SETTINGS_MODULE"] = "password_policies.tests.test_settings"
     django.setup()
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
@@ -17,5 +17,5 @@ def runtests(*test_args):
     sys.exit(bool(failures))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runtests(*sys.argv[1:])
