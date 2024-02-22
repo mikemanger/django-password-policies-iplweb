@@ -10,7 +10,7 @@ class PasswordPoliciesUtilsTest(TestCase):
         self.user = create_user()
         self.check = PasswordCheck(self.user)
         create_password_history(self.user)
-        return super(PasswordPoliciesUtilsTest, self).setUp()
+        return super().setUp()
 
     def test_password_check_is_required(self):
         # by default no change is required

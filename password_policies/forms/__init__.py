@@ -1,33 +1,22 @@
-from __future__ import unicode_literals
+from collections import OrderedDict as SortedDict
 
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import is_password_usable, make_password
+from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
-
-try:
-    # SortedDict is deprecated as of Django 1.7 and will be removed in Django 1.9.
-    # https://code.djangoproject.com/wiki/SortedDict
-    from collections import OrderedDict as SortedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict
-
-try:
-    from django.contrib.sites.models import get_current_site
-except ImportError:
-    from django.contrib.sites.shortcuts import get_current_site
-
 from django.template.defaultfilters import unordered_list
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.utils.safestring import mark_safe
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext
 
 from password_policies.conf import settings
 from password_policies.forms.fields import PasswordPoliciesField
 from password_policies.models import PasswordChangeRequired, PasswordHistory
-from django.utils.translation import gettext, gettext_lazy as _, ngettext
 
 
 class PasswordPoliciesForm(forms.Form):
@@ -59,65 +48,82 @@ class PasswordPoliciesForm(forms.Form):
 
         :arg user: A :class:`~django.contrib.auth.models.User` instance."""
         self.user = user
-        super(PasswordPoliciesForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         help_text_chunks = []
         if settings.PASSWORD_MIN_LENGTH:
             help_text_chunks.append(
-                ngettext("must be at least 1 character long",
-                          "must be at least %(count)s characters long",
-                          settings.PASSWORD_MIN_LENGTH
-                          ) % {"count": settings.PASSWORD_MIN_LENGTH}
+                ngettext(
+                    "must be at least 1 character long",
+                    "must be at least %(count)s characters long",
+                    settings.PASSWORD_MIN_LENGTH,
+                )
+                % {"count": settings.PASSWORD_MIN_LENGTH}
             )
         if settings.PASSWORD_MAX_CONSECUTIVE:
             help_text_chunks.append(
-                gettext("must not contain %(count)s or more consecutive identical characters")
+                gettext(
+                    "must not contain %(count)s or more consecutive identical characters"
+                )
                 % {"count": settings.PASSWORD_MAX_CONSECUTIVE}
             )
         if settings.PASSWORD_MIN_LETTERS:
             help_text_chunks.append(
-                ngettext("must contain at least 1 alphanumeric character",
-                          "must contain at least %(count)s alphanumeric characters",
-                          settings.PASSWORD_MIN_LETTERS
-                          ) % {"count": settings.PASSWORD_MIN_LETTERS}
+                ngettext(
+                    "must contain at least 1 alphanumeric character",
+                    "must contain at least %(count)s alphanumeric characters",
+                    settings.PASSWORD_MIN_LETTERS,
+                )
+                % {"count": settings.PASSWORD_MIN_LETTERS}
             )
         if settings.PASSWORD_MIN_LOWERCASE_LETTERS:
             help_text_chunks.append(
-                ngettext("must contain at least 1 lowercase character",
-                          "must contain at least %(count)s lowercase characters",
-                          settings.PASSWORD_MIN_LOWERCASE_LETTERS
-                          ) % {"count": settings.PASSWORD_MIN_LOWERCASE_LETTERS}
+                ngettext(
+                    "must contain at least 1 lowercase character",
+                    "must contain at least %(count)s lowercase characters",
+                    settings.PASSWORD_MIN_LOWERCASE_LETTERS,
+                )
+                % {"count": settings.PASSWORD_MIN_LOWERCASE_LETTERS}
             )
         if settings.PASSWORD_MIN_UPPERCASE_LETTERS:
             help_text_chunks.append(
-                ngettext("must contain at least 1 uppercase character",
-                          "must contain at least %(count)s uppercase characters",
-                          settings.PASSWORD_MIN_UPPERCASE_LETTERS
-                          ) % {"count": settings.PASSWORD_MIN_UPPERCASE_LETTERS}
+                ngettext(
+                    "must contain at least 1 uppercase character",
+                    "must contain at least %(count)s uppercase characters",
+                    settings.PASSWORD_MIN_UPPERCASE_LETTERS,
+                )
+                % {"count": settings.PASSWORD_MIN_UPPERCASE_LETTERS}
             )
         if settings.PASSWORD_MIN_NUMBERS:
             help_text_chunks.append(
-                ngettext("must contain at least 1 number",
-                          "must contain at least %(count)s numbers",
-                          settings.PASSWORD_MIN_NUMBERS
-                          ) % {"count": settings.PASSWORD_MIN_NUMBERS}
+                ngettext(
+                    "must contain at least 1 number",
+                    "must contain at least %(count)s numbers",
+                    settings.PASSWORD_MIN_NUMBERS,
+                )
+                % {"count": settings.PASSWORD_MIN_NUMBERS}
             )
         if settings.PASSWORD_MIN_SYMBOLS:
             help_text_chunks.append(
-                ngettext("must contain at least 1 special character (e.g. @#$%%^&.)",
-                          "must contain at least %(count)s special characters (e.g. @#$%%^&.)",
-                          settings.PASSWORD_MIN_SYMBOLS
-                          ) % {"count": settings.PASSWORD_MIN_SYMBOLS}
+                ngettext(
+                    "must contain at least 1 special character (e.g. @#$%%^&.)",
+                    "must contain at least %(count)s special characters (e.g. @#$%%^&.)",
+                    settings.PASSWORD_MIN_SYMBOLS,
+                )
+                % {"count": settings.PASSWORD_MIN_SYMBOLS}
             )
         if settings.PASSWORD_USE_HISTORY and settings.PASSWORD_HISTORY_COUNT:
             help_text_chunks.append(
-                ngettext("must differ from your last password",
-                          "must differ from your last %(count)s passwords",
-                          settings.PASSWORD_HISTORY_COUNT
-                          ) % {"count": settings.PASSWORD_HISTORY_COUNT}
+                ngettext(
+                    "must differ from your last password",
+                    "must differ from your last %(count)s passwords",
+                    settings.PASSWORD_HISTORY_COUNT,
+                )
+                % {"count": settings.PASSWORD_HISTORY_COUNT}
             )
-        self.fields['new_password1'].help_text = (
-            "<div class=\"new_password1-help-text\">" + gettext(
-            "The new password must have the following characteristics:") + "</div>"
+        self.fields["new_password1"].help_text = (
+            '<div class="new_password1-help-text">'
+            + gettext("The new password must have the following characteristics:")
+            + "</div>"
             + unordered_list(help_text_chunks)
         )
 
@@ -191,7 +197,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
     def clean(self):
         """
         Validates that old and new password are not too similar."""
-        cleaned_data = super(PasswordPoliciesChangeForm, self).clean()
+        cleaned_data = super().clean()
         old_password = cleaned_data.get("old_password")
         new_password1 = cleaned_data.get("new_password1")
 
@@ -213,7 +219,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
         return cleaned_data
 
     def save(self, commit=True):
-        user = super(PasswordPoliciesChangeForm, self).save(commit=commit)
+        user = super().save(commit=commit)
         try:
             # Checking the object id to prevent AssertionError id is None when deleting.
             if user.password_change_required and user.password_change_required.id:

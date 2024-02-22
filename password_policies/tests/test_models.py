@@ -2,14 +2,14 @@ from django.test import TestCase
 
 from password_policies.conf import settings
 from password_policies.models import PasswordHistory
-from password_policies.tests.lib import create_password_history, create_user, passwords
+from password_policies.tests import lib
 
 
 class PasswordHistoryModelTestCase(TestCase):
     def setUp(self):
-        self.user = create_user()
-        create_password_history(self.user)
-        return super(PasswordHistoryModelTestCase, self).setUp()
+        self.user = lib.create_user()
+        lib.create_password_history(self.user)
+        return super().setUp()
 
     def test_password_history_expiration_with_offset(self):
         offset = settings.PASSWORD_HISTORY_COUNT + 2
@@ -23,4 +23,6 @@ class PasswordHistoryModelTestCase(TestCase):
         self.assertEqual(count, settings.PASSWORD_HISTORY_COUNT)
 
     def test_password_history_recent_passwords(self):
-        self.failIf(PasswordHistory.objects.check_password(self.user, passwords[-1]))
+        self.assertFalse(
+            PasswordHistory.objects.check_password(self.user, lib.passwords[-1])
+        )
