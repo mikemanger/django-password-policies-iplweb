@@ -49,7 +49,7 @@ class PasswordChangeViewsTestCase(TestCase):
         response = self.client.post(reverse("password_change"), data=data)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context["form"].is_valid())
-        self.assertFormError(response.context["form"], field="old_password", errors=msg)
+        self.assertEqual(response.context["form"].errors["old_password"], [msg])
         self.client.logout()
 
     def test_password_change_success(self):
