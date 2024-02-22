@@ -11,6 +11,7 @@ except ImportError:
 
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -19,16 +20,12 @@ from django.views.generic import TemplateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
 
-from password_policies.exceptions import MustBeLoggedOutException
+from password_policies import forms
 from password_policies.compat import is_authenticated
 from password_policies.conf import settings
-from password_policies.forms import (
-    PasswordPoliciesChangeForm,
-    PasswordPoliciesForm,
-    PasswordResetForm,
-)
-from password_policies.utils import string_to_datetime, datetime_to_string
-from django.utils.encoding import force_str
+from password_policies.exceptions import MustBeLoggedOutException
+from password_policies.utils import datetime_to_string
+
 
 class LoggedOutMixin(View):
     """
@@ -43,17 +40,16 @@ class LoggedOutMixin(View):
             return permission_denied(
                 request, MustBeLoggedOutException, template_name=template_name
             )
-        return super(LoggedOutMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
-class AdminSiteContextMixin(object):
-
+class AdminSiteContextMixin:
     def get_context_data(self, **kwargs):
         """
         Adds the AdminSite context to all views that inherit this Mixin"""
         context = admin.site.each_context(self.request)
         context.update(**kwargs)
-        return super(AdminSiteContextMixin, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
 
 class PasswordChangeDoneView(AdminSiteContextMixin, TemplateView):
@@ -67,7 +63,7 @@ class PasswordChangeDoneView(AdminSiteContextMixin, TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(PasswordChangeDoneView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
 
 class PasswordChangeFormView(AdminSiteContextMixin, FormView):
@@ -75,7 +71,7 @@ class PasswordChangeFormView(AdminSiteContextMixin, FormView):
     A view that allows logged in users to change their password."""
 
     #: The form used by this view.
-    form_class = PasswordPoliciesChangeForm
+    form_class = forms.PasswordPoliciesChangeForm
     #: An URL to redirect to after the form has been successfully
     #: validated.
     success_url = None
@@ -93,14 +89,14 @@ class PasswordChangeFormView(AdminSiteContextMixin, FormView):
         redirect_field_name = kwargs.pop("redirect_field_name", None)
         if redirect_field_name:
             self.redirect_field_name = redirect_field_name
-        return super(PasswordChangeFormView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def form_valid(self, form):
         form.save()
         # Updating the password logs out all other sessions for the user
         # except the current one.
         update_session_auth_hash(self.request, form.user)
-        return super(PasswordChangeFormView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_form(self, form_class=None):
         if form_class is None:
@@ -135,7 +131,7 @@ class PasswordChangeFormView(AdminSiteContextMixin, FormView):
     def get_context_data(self, **kwargs):
         name = self.redirect_field_name
         kwargs[name] = self.request.GET.get(name, "")
-        return super(PasswordChangeFormView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class PasswordResetCompleteView(AdminSiteContextMixin, LoggedOutMixin, TemplateView):
@@ -153,12 +149,12 @@ class PasswordResetCompleteView(AdminSiteContextMixin, LoggedOutMixin, TemplateV
         Adds the login URL to redirect to (defaults to the LOGIN_URL setting
         in Django) to the view's context."""
         kwargs["login_url"] = resolve_url(settings.LOGIN_URL)
-        return super(PasswordResetCompleteView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class PasswordResetConfirmView(AdminSiteContextMixin, LoggedOutMixin, FormView):
     #: The form used by this view.
-    form_class = PasswordPoliciesForm
+    form_class = forms.PasswordPoliciesForm
     #: An URL to redirect to after the form has been successfully
     #: validated.
     success_url = None
@@ -182,7 +178,7 @@ class PasswordResetConfirmView(AdminSiteContextMixin, LoggedOutMixin, FormView):
                 self.user = None
             else:
                 signer = signing.TimestampSigner()
-                max_age = settings.PASSWORD_RESET_TIMEOUT_DAYS * 24 * 60 * 60
+                max_age = settings.PASSWORD_RESET_TIMEOUT
                 il = (self.user.password, self.timestamp, self.signature)
                 try:
                     signer.unsign(":".join(il), max_age=max_age)
@@ -190,21 +186,21 @@ class PasswordResetConfirmView(AdminSiteContextMixin, LoggedOutMixin, FormView):
                     pass
                 else:
                     self.validlink = True
-        return super(PasswordResetConfirmView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.save()
-        return super(PasswordResetConfirmView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get(self, request, *args, **kwargs):
         if self.validlink:
-            return super(PasswordResetConfirmView, self).get(request, *args, **kwargs)
+            return super().get(request, *args, **kwargs)
         return self.render_to_response(self.get_context_data())
 
     def get_context_data(self, **kwargs):
         kwargs["user"] = self.user
         kwargs["validlink"] = self.validlink
-        return super(PasswordResetConfirmView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     def get_form(self, form_class=None):
         if form_class is None:
@@ -223,7 +219,7 @@ class PasswordResetConfirmView(AdminSiteContextMixin, LoggedOutMixin, FormView):
 
     def post(self, request, *args, **kwargs):
         if self.validlink:
-            return super(PasswordResetConfirmView, self).post(request, *args, **kwargs)
+            return super().post(request, *args, **kwargs)
         return self.render_to_response(self.get_context_data())
 
 
@@ -248,7 +244,7 @@ class PasswordResetFormView(AdminSiteContextMixin, LoggedOutMixin, FormView):
     #: to generate the HTML attachment of the mail.
     email_html_template_name = "registration/password_reset_email.html"
     #: The form used by this view.
-    form_class = PasswordResetForm
+    form_class = forms.PasswordResetForm
     #: The email address to use as sender of the email.
     from_email = None
     #: Determines wether this view is used by an admin site.
@@ -275,13 +271,13 @@ class PasswordResetFormView(AdminSiteContextMixin, LoggedOutMixin, FormView):
             "request": self.request,
         }
         if self.is_admin_site:
-            opts = dict(opts, domain_override=self.request.META["HTTP_HOST"])
+            opts = dict(opts, domain_override=self.request.headers["host"])
         form.save(**opts)
-        return super(PasswordResetFormView, self).form_valid(form)
+        return super().form_valid(form)
 
     @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
-        return super(PasswordResetFormView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         """

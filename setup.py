@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 install_requires = ["django"]
 
 tests_require = [
-    'freezegun',
+    "freezegun",
 ]
 
 setup(

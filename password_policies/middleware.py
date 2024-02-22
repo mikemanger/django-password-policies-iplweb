@@ -1,12 +1,8 @@
 import re
 from datetime import timedelta
 
-try:
-    from django.core.urlresolvers import NoReverseMatch, Resolver404, resolve, reverse
-except ImportError:
-    from django.urls.base import reverse, resolve, NoReverseMatch, Resolver404
-
 from django.http import HttpResponseRedirect
+from django.urls.base import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils import timezone
 
 try:
@@ -16,10 +12,11 @@ except ImportError:
 
 from django.conf import settings as django_setings
 
+from password_policies import utils
 from password_policies.compat import is_authenticated
 from password_policies.conf import settings
 from password_policies.models import PasswordChangeRequired, PasswordHistory
-from password_policies.utils import PasswordCheck, string_to_datetime, datetime_to_string
+
 
 class PasswordChangeMiddleware(MiddlewareMixin):
     """
@@ -78,13 +75,15 @@ class PasswordChangeMiddleware(MiddlewareMixin):
         if not request.session.get(self.last, None):
             newest = PasswordHistory.objects.get_newest(request.user)
             if newest:
-                request.session[self.last] = datetime_to_string(newest.created)
+                request.session[self.last] = utils.datetime_to_string(newest.created)
             else:
                 # TODO: This relies on request.user.date_joined which might not
                 # be available!!!
-                request.session[self.last] = datetime_to_string(request.user.date_joined)
+                request.session[self.last] = utils.datetime_to_string(
+                    request.user.date_joined
+                )
 
-        date_last = string_to_datetime(request.session[self.last])
+        date_last = utils.string_to_datetime(request.session[self.last])
         if date_last < self.expiry_datetime:
             request.session[self.required] = True
             if not PasswordChangeRequired.objects.filter(user=request.user).count():
@@ -95,21 +94,20 @@ class PasswordChangeMiddleware(MiddlewareMixin):
     def _check_necessary(self, request):
 
         if not request.session.get(self.checked, None):
-            request.session[self.checked] = datetime_to_string(self.now)
+            request.session[self.checked] = utils.datetime_to_string(self.now)
 
             #  If the PASSWORD_CHECK_ONLY_AT_LOGIN is set, then only check at the beginning of session, which we can
             #  tell by self.now time having just been set.
-        if (
-            not settings.PASSWORD_CHECK_ONLY_AT_LOGIN
-            or request.session.get(self.checked, None) == datetime_to_string(self.now)
-        ):
+        if not settings.PASSWORD_CHECK_ONLY_AT_LOGIN or request.session.get(
+            self.checked, None
+        ) == utils.datetime_to_string(self.now):
             # If a password change is enforced we won't check
             # the user's password history, thus reducing DB hits...
             if PasswordChangeRequired.objects.filter(user=request.user).count():
                 request.session[self.required] = True
                 return
 
-            date_checked = string_to_datetime(request.session[self.checked])
+            date_checked = utils.string_to_datetime(request.session[self.checked])
             if date_checked < self.expiry_datetime:
                 try:
                     del request.session[self.last]
@@ -126,7 +124,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             # therefore causing a never ending password update loop
             request.session[self.required] = False
 
-    def _is_excluded_path(self, actual_path):
+    def _is_excluded_path(self, actual_path):  # noqa
         paths = settings.PASSWORD_CHANGE_MIDDLEWARE_EXCLUDED_PATHS[:]
         path = r"^%s$" % self.url
         paths.append(path)
@@ -144,7 +142,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             else:
                 paths.append(r"^%s$" % logout_url)
             try:
-                logout_url = u"/admin/logout/"
+                logout_url = "/admin/logout/"
                 resolve(logout_url)
             except Resolver404:
                 pass
@@ -168,7 +166,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
                 next_to = redirect_to
             else:
                 next_to = request.get_full_path()
-            url = "%s?%s=%s" % (self.url, settings.REDIRECT_FIELD_NAME, next_to)
+            url = f"{self.url}?{settings.REDIRECT_FIELD_NAME}={next_to}"
             return HttpResponseRedirect(url)
 
     def process_request(self, request):
@@ -183,14 +181,13 @@ class PasswordChangeMiddleware(MiddlewareMixin):
 
         auth = is_authenticated(request.user)
         is_staff = auth and request.user.is_staff
-
         if (
             settings.PASSWORD_DURATION_SECONDS
             and auth
             and (is_staff or not settings.PASSWORD_CHECK_ONLY_FOR_STAFF_USERS)
             and not self._is_excluded_path(request.path)
         ):
-            self.check = PasswordCheck(request.user)
+            self.check = utils.PasswordCheck(request.user)
             self.expiry_datetime = self.check.get_expiry_datetime()
             self._check_necessary(request)
             return self._redirect(request)
