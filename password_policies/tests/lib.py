@@ -46,7 +46,7 @@ def create_user(
     if not raw_password:
         raw_password = passwords[-1]
     if not date_joined:
-        rind = randint(0, (duration / count + 1))
+        rind = randint(0, (duration // count + 1))
         seconds = (count * duration + rind) * 2
         date_joined = get_datetime_from_delta(timezone.now(), seconds)
     if not last_login:
