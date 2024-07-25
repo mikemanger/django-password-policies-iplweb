@@ -96,6 +96,11 @@ class PasswordChangeViewsTestCase(TestCase):
         changes the user's password, creates a new password history entry
         for the user and issues a redirect.
         """
+        data = {
+            "old_password": passwords[-1],
+            "new_password1": "Chah+pher9k",
+            "new_password2": "Chah+pher9k",
+        }
         msg = 'This password is too short. It must contain at least 20 characters.'
         self.client.login(username="alice", password=data["old_password"])
         response = self.client.post(reverse("password_change"), data=data)
