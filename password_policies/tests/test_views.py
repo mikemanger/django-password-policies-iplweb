@@ -30,7 +30,7 @@ class PasswordChangeViewsTestCase(TestCase):
         self.client.login(username="alice", password=passwords[-1])
         response = self.client.get(reverse("password_change"))
         self.assertEqual(response.status_code, 200)
-        self.failUnless(
+        self.assertTrue(
             isinstance(response.context["form"], PasswordPoliciesChangeForm)
         )
         self.assertTemplateUsed(response, "registration/password_change_form.html")
@@ -50,7 +50,7 @@ class PasswordChangeViewsTestCase(TestCase):
         self.client.login(username="alice", password=passwords[-1])
         response = self.client.post(reverse("password_change"), data=data)
         self.assertEqual(response.status_code, 200)
-        self.failIf(response.context["form"].is_valid())
+        self.assertFalse(response.context["form"].is_valid())
         self.assertFormError(response, "form", field="old_password", errors=msg)
         self.client.logout()
 
@@ -107,7 +107,7 @@ class PasswordChangeViewsTestCase(TestCase):
         self.client.login(username="alice", password=data["old_password"])
         response = self.client.post(reverse("password_change"), data=data)
         self.assertEqual(response.status_code, 200)
-        self.failIf(response.context["form"].is_valid())
+        self.assertFalse(response.context["form"].is_valid())
         self.assertFormError(response, "form", field="new_password2", errors=msg)
         self.client.logout()
 
