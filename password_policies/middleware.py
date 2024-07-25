@@ -2,16 +2,18 @@ import re
 from datetime import timedelta
 
 try:
-    from django.core.urlresolvers import NoReverseMatch, Resolver404, resolve, reverse
-except ImportError:
     from django.urls.base import reverse, resolve, NoReverseMatch, Resolver404
+except ImportError:
+    # Before Django 2.0
+    from django.core.urlresolvers import NoReverseMatch, Resolver404, resolve, reverse
 
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 
-try:
+import django.utils.deprecation
+if hasattr(django.utils.deprecation, 'MiddlewareMixin'):
     from django.utils.deprecation import MiddlewareMixin
-except ImportError:
+else:
     MiddlewareMixin = object
 
 from django.conf import settings as django_setings

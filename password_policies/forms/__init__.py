@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django import forms
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.hashers import is_password_usable, make_password
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
@@ -16,13 +16,18 @@ except ImportError:
 
 
 try:
-    from django.contrib.sites.models import get_current_site
-except ImportError:
     from django.contrib.sites.shortcuts import get_current_site
+except ImportError:
+    # Before Django 1.9
+    from django.contrib.sites.models import get_current_site
 
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.utils.translation import ugettext_lazy as _
+try:
+    from django.utils.translation import gettext_lazy as _
+except ImportError:
+    # Before in Django 3.0
+    from django.utils.translation import ugettext_lazy as _
 
 from password_policies.conf import settings
 from password_policies.forms.fields import PasswordPoliciesField
@@ -79,6 +84,7 @@ class PasswordPoliciesForm(forms.Form):
         if password1 and password2:
             if password1 != password2:
                 raise forms.ValidationError(self.error_messages["password_mismatch"])
+        password_validation.validate_password(password2, self.user)
         return password2
 
     def save(self, commit=True):

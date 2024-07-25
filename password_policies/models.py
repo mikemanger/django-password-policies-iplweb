@@ -3,7 +3,11 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import signals
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+try:
+    from django.utils.translation import gettext_lazy as _
+except ImportError:
+    # Before in Django 3.0
+    from django.utils.translation import ugettext_lazy as _
 
 from password_policies.conf import settings
 from password_policies.managers import PasswordHistoryManager

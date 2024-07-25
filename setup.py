@@ -37,5 +37,4 @@ and a mechanism to force password changes.
     ],
     install_requires=install_requires,
     tests_require=tests_require,
-    test_suite="tests.runtests",
 )

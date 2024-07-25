@@ -86,3 +86,5 @@ SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 
 
 MEDIA_URL = "/media/somewhere/"
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

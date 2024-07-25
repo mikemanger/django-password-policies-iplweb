@@ -25,12 +25,10 @@ in a project's settings file::
     )
 """
     d = {}
-    try:
-        # Did this ever worked? It gives error on Django 2.0
-        # and I haven't ran the test suite before that...
-        auth = request.user.is_authenticated()
-    except TypeError:
-        auth = request.user.is_authenticated
+    auth = request.user.is_authenticated
+    if callable(auth):  # Before Django 1.10
+        auth = auth()
+
     if auth:
         if settings.PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY not in request.session:
             r = PasswordHistory.objects.change_required(request.user)
