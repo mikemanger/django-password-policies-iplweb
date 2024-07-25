@@ -65,7 +65,7 @@ MIDDLEWARE = (
     "django.contrib.messages.middleware.MessageMiddleware",
 )
 
-SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
 
 
 MEDIA_URL = "/media/somewhere/"

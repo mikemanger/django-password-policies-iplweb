@@ -74,7 +74,6 @@ class PasswordPoliciesMiddlewareTest(TestCase):
         p.delete()
 
 
-@override_settings(SESSION_SERIALIZER='django.contrib.sessions.serializers.JSONSerializer')
 class PasswordPoliciesMiddlewareJsonSerializerTest(TestCase):
     def setUp(self):
         self.user = create_user()

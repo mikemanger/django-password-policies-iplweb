@@ -1,5 +1,7 @@
+from unittest import skipIf
+
+from django import VERSION as DJANGO_VERSION
 from django.core import signing
-from django.conf import settings as django_settings
 from django.test import Client, TestCase, override_settings
 from django.utils import timezone
 from django.urls.base import reverse
@@ -117,6 +119,7 @@ class PasswordChangeViewsTestCase(TestCase):
         )
         assert res.status_code == 200
 
+    @skipIf(DJANGO_VERSION >= (5, 0), 'PickleSerializer not supported in this version')
     @override_settings(SESSION_SERIALIZER='django.contrib.sessions.serializers.PickleSerializer', USE_TZ=False)
     @freeze_time("2021-07-21T17:00:00.000000")
     def test_pickle_serializer_set_datetime_USE_TZ_false(self):
@@ -146,6 +149,7 @@ class PasswordChangeViewsTestCase(TestCase):
         self.assertEqual(string_to_datetime(session[settings.PASSWORD_POLICIES_LAST_CHANGED_SESSION_KEY]),
                          timezone.now())
 
+    @skipIf(DJANGO_VERSION >= (5, 0), 'PickleSerializer not supported in this version')
     @override_settings(SESSION_SERIALIZER='django.contrib.sessions.serializers.PickleSerializer', USE_TZ=True)
     @freeze_time("2021-07-21T17:00:00.000000")
     def test_pickle_serializer_set_datetime_USE_TZ_true(self):
@@ -175,6 +179,7 @@ class PasswordChangeViewsTestCase(TestCase):
         self.assertEqual(string_to_datetime(session[settings.PASSWORD_POLICIES_LAST_CHANGED_SESSION_KEY]),
                          timezone.now())
 
+    @skipIf(DJANGO_VERSION >= (5, 0), 'PickleSerializer not supported in this version')
     @override_settings(SESSION_SERIALIZER='django.contrib.sessions.serializers.PickleSerializer', USE_TZ=True)
     @freeze_time("2021-07-21T18:00:00.000000+0100")
     def test_pickle_serializer_set_datetime_USE_TZ_true_localized(self):
