@@ -5,36 +5,11 @@ import stringprep
 import unicodedata
 
 from django.core.exceptions import ValidationError
-
-try:
-    from django.utils.encoding import smart_str as smart_text
-except ImportError:
-    # Before in Django 2.0
-    from django.utils.encoding import smart_text
-
-try:
-    from django.utils.encoding import force_str as force_text
-except ImportError:
-    # Before in Django 2.0
-    from django.utils.encoding import force_text
-try:
-    from django.utils.translation import gettext_lazy as _
-    from django.utils.translation import ngettext as ungettext
-except ImportError:
-    # Before in Django 3.0
-    from django.utils.translation import ugettext_lazy as _
-    from django.utils.translation import ungettext
+from django.utils.encoding import force_str, smart_str
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext
 
 from password_policies.conf import settings
-
-try:
-    # Python 3 does not have an xrange, this will throw a NameError
-    xrange
-except NameError:
-    pass
-else:
-    # alias range to xrange for Python 2
-    range = xrange  # noqa
 
 
 class BaseCountValidator:
@@ -48,7 +23,7 @@ class BaseCountValidator:
         if not self.get_min_count():
             return
         counter = 0
-        for character in force_text(value):
+        for character in force_str(value):
             category = unicodedata.category(character)
             if category in self.categories:
                 counter += 1
@@ -69,7 +44,7 @@ class BaseRFC4013Validator:
     Validates that a given password passes the requirements as
     defined in `RFC 4013`_.
 
-    .. _`RFC 4013`: http://tools.ietf.org/html/rfc4013"""
+    .. _`RFC 4013`: https://datatracker.ietf.org/doc/html/rfc4013"""
 
     first = ""
     invalid = True
@@ -78,13 +53,13 @@ class BaseRFC4013Validator:
     r_and_al_cat = False
 
     def __call__(self, value):
-        value = force_text(value)
+        value = force_str(value)
         self.first = value[0]
         self.last = value[:-1]
         self._process(value)
 
     def _process(self, value):
-        for code in force_text(value):
+        for code in force_str(value):
             # TODO: Is this long enough?
             if (
                 stringprep.in_table_c12(code)
@@ -123,7 +98,7 @@ class BaseSimilarityValidator:
             self.haystacks = haystacks
 
     def __call__(self, value):
-        needle = force_text(value)
+        needle = force_str(value)
         for haystack in self.haystacks:
             distance = self.fuzzy_substring(needle, haystack)
             longest = max(len(needle), len(haystack))
@@ -171,7 +146,7 @@ class BidirectionalValidator(BaseRFC4013Validator):
 
     For more information read `RFC 4013, section 2.3`_.
 
-    .. _`RFC 4013, section 2.3`: http://tools.ietf.org/html/rfc4013#section-2.3"""
+    .. _`RFC 4013, section 2.3`: https://datatracker.ietf.org/doc/html/rfc4013#section-2.3"""
 
     #: The validator's error code.
     code = "invalid_bidirectional"
@@ -212,11 +187,11 @@ class ConsecutiveCountValidator:
         if not self.get_max_count():
             return
         consecutive_found = False
-        for _ign, group in itertools.groupby(force_text(value)):
+        for _ign, group in itertools.groupby(force_str(value)):
             if len(list(group)) > self.get_max_count():
                 consecutive_found = True
         if consecutive_found:
-            msg = ungettext(
+            msg = ngettext(
                 "The new password contains consecutive"
                 " characters. Only %(count)d consecutive character"
                 " is allowed.",
@@ -278,7 +253,7 @@ class CracklibValidator:
             crack.FascistCheck(value)
         except ValueError as reason:
             reason = _(str(reason))
-            message = _("Please choose a different password, %s." % reason)
+            message = _(f"Please choose a different password, {reason}.")
             raise ValidationError(message, code=self.code)
 
     def __init__(
@@ -397,9 +372,7 @@ class DictionaryValidator(BaseSimilarityValidator):
         haystacks = []
         if self.dictionary:
             with open(self.dictionary) as dictionary:
-                haystacks.extend(
-                    [smart_text(x.strip()) for x in dictionary.readlines()]
-                )
+                haystacks.extend([smart_str(x.strip()) for x in dictionary.readlines()])
         if self.words:
             haystacks.extend(self.words)
         super().__init__(haystacks=haystacks)
@@ -410,7 +383,7 @@ class InvalidCharacterValidator(BaseRFC4013Validator):
     Validates that a given password does not contain invalid unicode
     characters as defined in `RFC 4013, section 2.3`_.
 
-    .. _`RFC 4013, section 2.3`: http://tools.ietf.org/html/rfc4013#section-2.3"""
+    .. _`RFC 4013, section 2.3`: https://datatracker.ietf.org/doc/html/rfc4013#section-2.3"""
 
     #: The validator's error code.
     code = "invalid_unicode"
@@ -452,7 +425,7 @@ Nl    Number, Letter
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more letter.",
                 "The new password must contain %d or more letters.",
                 self.get_min_count(),
@@ -493,7 +466,7 @@ Ll    Letter, Lowercase
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more lowercase letter.",
                 "The new password must contain %d or more lowercase letters.",
                 self.get_min_count(),
@@ -535,7 +508,7 @@ Lu    Letter, Uppercase
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more uppercase letter.",
                 "The new password must contain %d or more uppercase letters.",
                 self.get_min_count(),
@@ -619,7 +592,7 @@ No    Number, Other
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more number.",
                 "The new password must contain %d or more numbers.",
                 self.get_min_count(),
@@ -691,7 +664,7 @@ Zl    Separator, Line
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more symbol.",
                 "The new password must contain %d or more symbols.",
                 self.get_min_count(),

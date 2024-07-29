@@ -59,4 +59,4 @@ works:
   includes a mechanism to compare a raw password with different encrypted
   passwords. No unencrypted password is saved to the database!
 
-.. _`Python bindings for cracklib`: http://www.nongnu.org/python-crack/
+.. _`Python bindings for cracklib`: https://www.nongnu.org/python-crack/
