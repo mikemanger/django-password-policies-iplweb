@@ -3,6 +3,7 @@ Unreleased
 
 * Remove unsupported Django code
 * Added ``__str__()`` definitions for models
+* Use path instead of re_path for some URLs
 
 0.8.6
 -----
