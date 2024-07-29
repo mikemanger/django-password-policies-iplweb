@@ -53,7 +53,7 @@ source_suffix = ".rst"
 master_doc = "contents"
 
 # General information about the project.
-project = "django-password-policies"
+project = "django-password-policies-iplweb"
 copyright = "2012, Tarak Blah"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -61,7 +61,7 @@ copyright = "2012, Tarak Blah"
 # built documents.
 #
 # The short X.Y version.
-version = password_policies.get_version()
+version = password_policies.__version__
 # The full version, including alpha/beta/rc tags.
 release = password_policies.__version__
 
@@ -261,7 +261,3 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 # texinfo_show_urls = 'footnote'
-
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"http://docs.python.org/": None}

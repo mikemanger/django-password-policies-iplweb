@@ -1,6 +1,6 @@
 import inspect
 
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_str
 from django.utils.html import strip_tags
 from fields import model_fields, model_meta_fields
 
@@ -22,16 +22,16 @@ def process_docstring(app, what, name, obj, options, lines):
                 continue
 
             # Decode and strip any html out of the field's help text
-            help_text = strip_tags(force_unicode(field.help_text))
+            help_text = strip_tags(force_str(field.help_text))
 
             lines.append(f".. attribute::  {field.name}")
             lines.append("    ")
             # Add the field's type to the docstring
             if isinstance(field, models.ForeignKey):
-                to = field.rel.to
+                to = field.related_model
                 msg = f"    %s(':class:`~{type(field).__name__}.{to.__module__}`')"
             elif isinstance(field, models.OneToOneField):
-                to = field.rel.to
+                to = field.related_model
                 msg = f"    {type(field).__name__}(':class:`~{to.__module__}.{to.__name__}`')"
             else:
                 msg = f"    {type(field).__name__}"
@@ -49,7 +49,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 lines.append(f"    {help_text}")
             lines.append("    ")
             f = model_fields[type(field).__name__]
-            for key in sorted(f.iterkeys()):
+            for key in sorted(f.keys()):
                 if (
                     hasattr(field, key)
                     and getattr(field, key) != f[key]
@@ -58,8 +58,8 @@ def process_docstring(app, what, name, obj, options, lines):
                     attr = getattr(field, key)
                     if key == "error_messages":
                         error_dict = {}
-                        for i in sorted(attr.iterkeys()):
-                            error_dict[i] = force_unicode(attr[i])
+                        for i in sorted(attr.keys()):
+                            error_dict[i] = force_str(attr[i])
                         attr = error_dict
                     if key == "validators":
                         v = []
@@ -71,7 +71,7 @@ def process_docstring(app, what, name, obj, options, lines):
         lines.append("")
         lines.append(".. attribute:: Meta")
         lines.append("")
-        for key in sorted(model_meta_fields.iterkeys()):
+        for key in sorted(model_meta_fields.keys()):
             if (
                 hasattr(obj._meta, key)
                 and getattr(obj._meta, key) != model_meta_fields[key]
@@ -90,7 +90,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 f = obj.base_fields[field]
                 # Decode and strip any html out of the field's help text
                 if hasattr(f, "help_text"):
-                    help_text = strip_tags(force_unicode(f.help_text))
+                    help_text = strip_tags(force_str(f.help_text))
 
                 lines.append(f".. attribute::  {field}")
                 lines.append("")
@@ -104,7 +104,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 if hasattr(f, "error_messages") and f.error_messages:
                     msgs = {}
                     for key, value in f.error_messages.items():
-                        msgs[key] = force_unicode(value)
+                        msgs[key] = force_str(value)
                     lines.append(f":kwarg error_messages:  {msgs}")
                 if f.help_text:
                     # Add the model field to the end of the docstring as a param
