@@ -6,17 +6,8 @@ import unicodedata
 
 from django.core.exceptions import ValidationError
 
-try:
-    from django.utils.encoding import smart_str as smart_text
-except ImportError:
-    # Before in Django 2.0
-    from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str, force_str
 
-try:
-    from django.utils.encoding import force_str as force_text
-except ImportError:
-    # Before in Django 2.0
-    from django.utils.encoding import force_text
 try:
     from django.utils.translation import gettext_lazy as _
     from django.utils.translation import ngettext as ungettext
@@ -26,15 +17,6 @@ except ImportError:
     from django.utils.translation import ungettext
 
 from password_policies.conf import settings
-
-try:
-    # Python 3 does not have an xrange, this will throw a NameError
-    xrange
-except NameError:
-    pass
-else:
-    # alias range to xrange for Python 2
-    range = xrange  # noqa
 
 
 class BaseCountValidator:
@@ -48,7 +30,7 @@ class BaseCountValidator:
         if not self.get_min_count():
             return
         counter = 0
-        for character in force_text(value):
+        for character in force_str(value):
             category = unicodedata.category(character)
             if category in self.categories:
                 counter += 1
@@ -78,13 +60,13 @@ class BaseRFC4013Validator:
     r_and_al_cat = False
 
     def __call__(self, value):
-        value = force_text(value)
+        value = force_str(value)
         self.first = value[0]
         self.last = value[:-1]
         self._process(value)
 
     def _process(self, value):
-        for code in force_text(value):
+        for code in force_str(value):
             # TODO: Is this long enough?
             if (
                 stringprep.in_table_c12(code)
@@ -123,7 +105,7 @@ class BaseSimilarityValidator:
             self.haystacks = haystacks
 
     def __call__(self, value):
-        needle = force_text(value)
+        needle = force_str(value)
         for haystack in self.haystacks:
             distance = self.fuzzy_substring(needle, haystack)
             longest = max(len(needle), len(haystack))
@@ -212,7 +194,7 @@ class ConsecutiveCountValidator:
         if not self.get_max_count():
             return
         consecutive_found = False
-        for _ign, group in itertools.groupby(force_text(value)):
+        for _ign, group in itertools.groupby(force_str(value)):
             if len(list(group)) > self.get_max_count():
                 consecutive_found = True
         if consecutive_found:
@@ -398,7 +380,7 @@ class DictionaryValidator(BaseSimilarityValidator):
         if self.dictionary:
             with open(self.dictionary) as dictionary:
                 haystacks.extend(
-                    [smart_text(x.strip()) for x in dictionary.readlines()]
+                    [smart_str(x.strip()) for x in dictionary.readlines()]
                 )
         if self.words:
             haystacks.extend(self.words)

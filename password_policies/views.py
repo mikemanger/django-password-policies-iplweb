@@ -4,22 +4,11 @@ from django.core import signing
 from django.utils import timezone
 
 from password_policies.exceptions import MustBeLoggedOutException
-
-try:
-    from django.urls.base import reverse
-except ImportError:
-    # Before Django 2.0
-    from django.core.urlresolvers import reverse
-
+from django.urls.base import reverse
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
 
-try:
-    from django.utils.encoding import force_str as force_text
-except ImportError:
-    # Before in Django 2.0
-    from django.utils.encoding import force_text
-
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -172,7 +161,7 @@ class PasswordResetConfirmView(LoggedOutMixin, FormView):
         self.validlink = False
         if self.uidb64 and self.timestamp and self.signature:
             try:
-                uid = force_text(urlsafe_base64_decode(self.uidb64))
+                uid = force_str(urlsafe_base64_decode(self.uidb64))
                 self.user = get_user_model().objects.get(id=uid)
             except (ValueError, get_user_model().DoesNotExist):
                 self.user = None

@@ -1,16 +1,4 @@
-try:
-    from django.urls import re_path as url
-except ImportError:
-    # Before Django 2.0
-    from django.conf.urls import url
-
-import django.conf.urls
-if hasattr(django.conf.urls, 'patterns'):
-    # patterns was deprecated in Django 1.8
-    from django.conf.urls import patterns
-else:
-    # patterns is unavailable in Django 1.10+
-    patterns = False
+from django.urls import re_path as url
 
 from password_policies.views import (
     PasswordChangeDoneView,
@@ -39,7 +27,3 @@ urlpatterns = [
     ),
     url(r"^reset/done/$", PasswordResetDoneView.as_view(), name="password_reset_done"),
 ]
-
-if patterns:
-    # Django 1.7
-    urlpatterns = patterns("", *urlpatterns)

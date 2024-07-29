@@ -1,10 +1,6 @@
 from django.test import TestCase
 from django.test.utils import override_settings
-
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_str as force_text
+from django.utils.encoding import force_str
 
 from password_policies.forms import (
     PasswordPoliciesChangeForm,
@@ -136,7 +132,7 @@ class PasswordPoliciesFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form["new_password1"].errors,
-            [force_text(form.error_messages["password_used"])],
+            [force_str(form.error_messages["password_used"])],
         )
 
     def test_password_mismatch(self):
@@ -145,7 +141,7 @@ class PasswordPoliciesFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form["new_password2"].errors,
-            [force_text(form.error_messages["password_mismatch"])],
+            [force_str(form.error_messages["password_mismatch"])],
         )
 
     def test_password_verification_unicode(self):
@@ -176,7 +172,7 @@ class PasswordPoliciesChangeFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form["old_password"].errors,
-            [force_text(form.error_messages["password_incorrect"])],
+            [force_str(form.error_messages["password_incorrect"])],
         )
         self.assertFalse(form.is_valid())
 
@@ -202,7 +198,7 @@ class PasswordResetFormTest(TestCase):
         form = PasswordResetForm(data)
         self.assertFalse(form.is_valid())
         self.assertEqual(
-            form["email"].errors, [force_text(form.error_messages["unusable"])]
+            form["email"].errors, [force_str(form.error_messages["unusable"])]
         )
         self.assertFalse(form.is_valid())
 

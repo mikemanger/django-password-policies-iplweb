@@ -1,12 +1,7 @@
 import re
 from datetime import timedelta
 
-try:
-    from django.urls.base import reverse, resolve, NoReverseMatch, Resolver404
-except ImportError:
-    # Before Django 2.0
-    from django.core.urlresolvers import NoReverseMatch, Resolver404, resolve, reverse
-
+from django.urls.base import reverse, resolve, NoReverseMatch, Resolver404
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 

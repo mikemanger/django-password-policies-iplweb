@@ -7,20 +7,9 @@ from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 
-try:
-    # SortedDict is deprecated as of Django 1.7 and will be removed in Django 1.9.
-    # https://code.djangoproject.com/wiki/SortedDict
-    from collections import OrderedDict as SortedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 
-
-try:
-    from django.contrib.sites.shortcuts import get_current_site
-except ImportError:
-    # Before Django 1.9
-    from django.contrib.sites.models import get_current_site
-
+from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 try:
@@ -168,7 +157,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
         return user
 
 
-PasswordPoliciesChangeForm.base_fields = SortedDict(
+PasswordPoliciesChangeForm.base_fields = OrderedDict(
     [
         (k, PasswordPoliciesChangeForm.base_fields[k])
         for k in ["old_password", "new_password1", "new_password2"]
