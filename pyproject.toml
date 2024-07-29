@@ -44,9 +44,6 @@ select = [
 
 [tool.tox]
 legacy_tox_ini = """
-[flake8]
-ignore = D503
-
 [tox]
 envlist =
     py38-django42
@@ -72,5 +69,5 @@ deps =
 # package = editable
 use_develop = true
 commands =
-	 pytest --cov password_policies --ds=password_policies.tests.test_settings password_policies/tests/ -s
+    pytest --cov password_policies --ds=password_policies.tests.test_settings password_policies/tests/ -s
 """
