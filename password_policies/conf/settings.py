@@ -184,3 +184,8 @@ TEMPLATE_403_PAGE = getattr(settings, "TEMPLATE_403_PAGE", "403.html")
 
 
 PASSWORD_RESET_TIMEOUT_DAYS = 1
+
+PASSWORD_POLICIES_LAST_CHECKED_SESSION_KEY = "_password_policies_last_checked"
+PASSWORD_POLICIES_EXPIRED_SESSION_KEY = "_password_policies_expired"
+PASSWORD_POLICIES_LAST_CHANGED_SESSION_KEY = "_password_policies_last_changed"
+PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY = "_password_policies_change_required"
