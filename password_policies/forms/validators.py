@@ -50,7 +50,7 @@ class BaseRFC4013Validator:
     Validates that a given password passes the requirements as
     defined in `RFC 4013`_.
 
-    .. _`RFC 4013`: http://tools.ietf.org/html/rfc4013"""
+    .. _`RFC 4013`: https://datatracker.ietf.org/doc/html/rfc4013"""
 
     first = ""
     invalid = True
@@ -152,7 +152,7 @@ class BidirectionalValidator(BaseRFC4013Validator):
 
     For more information read `RFC 4013, section 2.3`_.
 
-    .. _`RFC 4013, section 2.3`: http://tools.ietf.org/html/rfc4013#section-2.3"""
+    .. _`RFC 4013, section 2.3`: https://datatracker.ietf.org/doc/html/rfc4013#section-2.3"""
 
     #: The validator's error code.
     code = "invalid_bidirectional"
@@ -389,7 +389,7 @@ class InvalidCharacterValidator(BaseRFC4013Validator):
     Validates that a given password does not contain invalid unicode
     characters as defined in `RFC 4013, section 2.3`_.
 
-    .. _`RFC 4013, section 2.3`: http://tools.ietf.org/html/rfc4013#section-2.3"""
+    .. _`RFC 4013, section 2.3`: https://datatracker.ietf.org/doc/html/rfc4013#section-2.3"""
 
     #: The validator's error code.
     code = "invalid_unicode"

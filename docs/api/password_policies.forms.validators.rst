@@ -238,4 +238,4 @@ django-password-policies provides validators to check new passwords:
 
     A :class:`SymbolCountValidator` instance.
 
-.. _`Python bindings for cracklib documentation`: http://www.nongnu.org/python-crack/doc/index.html
+.. _`Python bindings for cracklib documentation`: https://www.nongnu.org/python-crack/doc/index.html

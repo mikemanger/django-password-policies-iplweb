@@ -33,7 +33,7 @@ Please note the following guidelines for contributing:
 
 * Documentation must be formatted to be used with `Sphinx`_.
 
-.. _`PEP 8`: http://www.python.org/dev/peps/pep-0008/
-.. _`Django coding style`: http://docs.djangoproject.com/en/dev/internals/contributing/#coding-style
+.. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
+.. _`Django coding style`: https://docs.djangoproject.com/en/dev/internals/contributing/writing-code/coding-style/
 .. _`GitHub`: https://github.com/iplweb/django-password-policies-iplweb/
-.. _`Sphinx`: http://sphinx.pocoo.org/
+.. _`Sphinx`: https://www.sphinx-doc.org/

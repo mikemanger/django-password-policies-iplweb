@@ -97,5 +97,5 @@ inside the Python path::
 
 
 .. _`Django`: https://www.djangoproject.com/
-.. _`Python bindings for cracklib`: http://www.nongnu.org/python-crack/
+.. _`Python bindings for cracklib`: https://www.nongnu.org/python-crack/
 .. _`Levenshtein Python C extension module`: https://github.com/miohtama/python-Levenshtein
