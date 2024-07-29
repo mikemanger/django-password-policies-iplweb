@@ -49,7 +49,8 @@ class PasswordChangeMiddleware(MiddlewareMixin):
 
     .. warning::
         This middleware does not try to redirect using the HTTPS
-        protocol."""
+        protocol.
+    """
 
     checked = settings.PASSWORD_POLICIES_LAST_CHECKED_SESSION_KEY
     expired = settings.PASSWORD_POLICIES_EXPIRED_SESSION_KEY
