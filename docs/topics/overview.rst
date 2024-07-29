@@ -43,5 +43,5 @@ Features
   for password resets.
 
 .. _`Django`: https://www.djangoproject.com/
-.. _`RFC 4013`: http://tools.ietf.org/html/rfc4013
-.. _`Python bindings for cracklib`: http://www.nongnu.org/python-crack/
+.. _`RFC 4013`: https://datatracker.ietf.org/doc/html/rfc4013
+.. _`Python bindings for cracklib`: https://www.nongnu.org/python-crack/

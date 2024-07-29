@@ -11,7 +11,7 @@ Requirements
 
 This application requires
 
-* `Django`_ 3.0 or newer
+* `Django`_ 2.2 or newer
 
 .. _install-cracklib:
 
@@ -54,11 +54,11 @@ From Pypi
 
 To install from `PyPi`_::
 
-    [sudo] pip install django-password-policies
+    [sudo] pip install django-password-policies-iplweb
 
 or::
 
-    [sudo] easy_install django-password-policies
+    [sudo] easy_install django-password-policies-iplweb
 
 .. _`PyPi`: https://pypi.python.org/pypi/django-password-policies
 
@@ -97,5 +97,5 @@ inside the Python path::
 
 
 .. _`Django`: https://www.djangoproject.com/
-.. _`Python bindings for cracklib`: http://www.nongnu.org/python-crack/
+.. _`Python bindings for cracklib`: https://www.nongnu.org/python-crack/
 .. _`Levenshtein Python C extension module`: https://github.com/miohtama/python-Levenshtein

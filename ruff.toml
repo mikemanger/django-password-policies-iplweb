@@ -1,0 +1,9 @@
+target-version = "py37"
+
+[lint]
+select = [
+    "DJ", # flake8-django
+    "F",  # flake8
+    "I",  # isort
+    "UP"  # pyupgrade
+]

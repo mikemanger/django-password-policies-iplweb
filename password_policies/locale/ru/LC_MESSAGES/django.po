@@ -1,5 +1,5 @@
 # This file is distributed under the same license as the django-password-policies.
-# Url: http://tarak.github.io/django-password-policies/
+# Url: https://tarak.github.io/django-password-policies/
 # Translators:
 # Dmitry Pyatkov <dkrn@yandex.ru>, 2014.
 msgid ""

@@ -24,7 +24,7 @@ As for now (Jan 2021), this fork is actively maintained by |iplweb|
 Requirements
 =============
 
-This application requires `Django`_ 2.2 or newer
+This application requires `Django`_ 2.2 and Python 3.7 or newer.
 
 .. _documentation:
 
@@ -33,6 +33,6 @@ Documentation
 
 A detailled documentation is available on `the project's GitHub Pages`_.
 
-.. _`the project's GitHub Pages`: http://github.com/iplweb/django-password-policies-iplweb
+.. _`the project's GitHub Pages`: https://iplweb.github.io/django-password-policies-iplweb/
 .. _`Django`: https://www.djangoproject.com/
 .. -`IPLweb on github`: https://github.com/iplweb/

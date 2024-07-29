@@ -1,7 +1,8 @@
-from django.http import HttpResponse
-from django.views.generic.base import View
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.utils.decorators import method_decorator
+from django.views.generic.base import View
+
 from password_policies.views import LoggedOutMixin
 
 
@@ -13,7 +14,7 @@ class TestHomeView(View):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(TestHomeView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
 
 class TestLoggedOutMixinView(LoggedOutMixin):

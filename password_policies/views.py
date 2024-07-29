@@ -1,25 +1,11 @@
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.core import signing
-from django.utils import timezone
-
-from password_policies.exceptions import MustBeLoggedOutException
-
-try:
-    from django.urls.base import reverse
-except ImportError:
-    # Before Django 2.0
-    from django.core.urlresolvers import reverse
-
 from django.shortcuts import resolve_url
+from django.urls.base import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
-
-try:
-    from django.utils.encoding import force_str as force_text
-except ImportError:
-    # Before in Django 2.0
-    from django.utils.encoding import force_text
-
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -29,11 +15,13 @@ from django.views.generic.base import View
 from django.views.generic.edit import FormView
 
 from password_policies.conf import settings
+from password_policies.exceptions import MustBeLoggedOutException
 from password_policies.forms import (
     PasswordPoliciesChangeForm,
     PasswordPoliciesForm,
     PasswordResetForm,
 )
+from password_policies.utils import datetime_to_string
 
 
 class LoggedOutMixin(View):
@@ -110,12 +98,14 @@ class PasswordChangeFormView(FormView):
         user was requesting before the password change.)
         If not returns the :attr:`~PasswordChangeFormView.success_url` attribute
         if set, otherwise the URL to the :class:`PasswordChangeDoneView`."""
-        checked = "_password_policies_last_checked"
-        last = "_password_policies_last_changed"
-        required = "_password_policies_change_required"
+        checked = settings.PASSWORD_POLICIES_LAST_CHECKED_SESSION_KEY
+        last = settings.PASSWORD_POLICIES_LAST_CHANGED_SESSION_KEY
+        required = settings.PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY
         now = timezone.now()
-        self.request.session[checked] = now
-        self.request.session[last] = now
+        now_str = datetime_to_string(now)
+
+        self.request.session[checked] = now_str
+        self.request.session[last] = now_str
         self.request.session[required] = False
         redirect_to = self.request.POST.get(self.redirect_field_name, "")
         if redirect_to:
@@ -172,7 +162,7 @@ class PasswordResetConfirmView(LoggedOutMixin, FormView):
         self.validlink = False
         if self.uidb64 and self.timestamp and self.signature:
             try:
-                uid = force_text(urlsafe_base64_decode(self.uidb64))
+                uid = force_str(urlsafe_base64_decode(self.uidb64))
                 self.user = get_user_model().objects.get(id=uid)
             except (ValueError, get_user_model().DoesNotExist):
                 self.user = None
@@ -271,7 +261,7 @@ class PasswordResetFormView(LoggedOutMixin, FormView):
             "request": self.request,
         }
         if self.is_admin_site:
-            opts = dict(opts, domain_override=self.request.META["HTTP_HOST"])
+            opts = dict(opts, domain_override=self.request.headers["host"])
         form.save(**opts)
         return super().form_valid(form)
 

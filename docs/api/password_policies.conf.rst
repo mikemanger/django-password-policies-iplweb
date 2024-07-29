@@ -15,6 +15,6 @@ and its new value to the project's settings file:
 ``Settings``
 ------------
 
-.. autoclass:: password_policies.conf.Settings
+.. autoclass:: password_policies.conf.settings
    :members:
    :show-inheritance:

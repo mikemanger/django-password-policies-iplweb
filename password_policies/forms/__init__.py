@@ -1,28 +1,15 @@
-from __future__ import unicode_literals
+from collections import OrderedDict
 
 from django import forms
 from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.hashers import is_password_usable, make_password
+from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
-
-try:
-    # SortedDict is deprecated as of Django 1.7 and will be removed in Django 1.9.
-    # https://code.djangoproject.com/wiki/SortedDict
-    from collections import OrderedDict as SortedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict
-
-
-try:
-    from django.contrib.sites.shortcuts import get_current_site
-except ImportError:
-    # Before Django 1.9
-    from django.contrib.sites.models import get_current_site
-
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+
 try:
     from django.utils.translation import gettext_lazy as _
 except ImportError:
@@ -63,7 +50,7 @@ class PasswordPoliciesForm(forms.Form):
 
         :arg user: A :class:`~django.contrib.auth.models.User` instance."""
         self.user = user
-        super(PasswordPoliciesForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_new_password1(self):
         """
@@ -121,7 +108,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
             ),
             "password_similar": _("The old and the new password are too similar."),
             "password_identical": _("The old and the new password are the same."),
-        }
+        },
     )
     old_password = forms.CharField(label=_("Old password"), widget=forms.PasswordInput)
 
@@ -136,7 +123,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
     def clean(self):
         """
         Validates that old and new password are not too similar."""
-        cleaned_data = super(PasswordPoliciesChangeForm, self).clean()
+        cleaned_data = super().clean()
         old_password = cleaned_data.get("old_password")
         new_password1 = cleaned_data.get("new_password1")
 
@@ -158,7 +145,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
         return cleaned_data
 
     def save(self, commit=True):
-        user = super(PasswordPoliciesChangeForm, self).save(commit=commit)
+        user = super().save(commit=commit)
         try:
             # Checking the object id to prevent AssertionError id is None when deleting.
             if user.password_change_required and user.password_change_required.id:
@@ -168,7 +155,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
         return user
 
 
-PasswordPoliciesChangeForm.base_fields = SortedDict(
+PasswordPoliciesChangeForm.base_fields = OrderedDict(
     [
         (k, PasswordPoliciesChangeForm.base_fields[k])
         for k in ["old_password", "new_password1", "new_password2"]

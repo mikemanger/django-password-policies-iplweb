@@ -195,10 +195,10 @@ file::
 Serializer
 ============================
 
-For now this app uses the PickleSerializer. This needs to be set up in the Django settings
-file::
+This app is tested with both PickleSerializer and JsonSerializer.
 
-    SESSION_SERIALIZER='django.contrib.sessions.serializers.PickleSerializer'
+Django recommends to change from old pickle serializer to json because
+possible remote code execution vulnerability.
 
 .. _setup-create-db-tables:
 

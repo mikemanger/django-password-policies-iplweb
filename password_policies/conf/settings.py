@@ -33,7 +33,7 @@ PASSWORD_CHANGE_MIDDLEWARE_EXCLUDED_PATHS = getattr(
 #: be performed if the user's password has expired.
 #:
 #: Defaults to 1 hour.
-PASSWORD_CHECK_SECONDS = getattr(settings, "PASSWORD_CHECK_SECONDS", 60 ** 2)
+PASSWORD_CHECK_SECONDS = getattr(settings, "PASSWORD_CHECK_SECONDS", 60**2)
 
 #: Specifies a list of common sequences to attempt to
 #: match a password against.
@@ -41,15 +41,15 @@ PASSWORD_COMMON_SEQUENCES = getattr(
     settings,
     "PASSWORD_COMMON_SEQUENCES",
     [
-        u"0123456789",
-        u"`1234567890-=",
-        u"~!@#$%^&*()_+",
-        u"abcdefghijklmnopqrstuvwxyz",
-        u"quertyuiop[]\\asdfghjkl;'zxcvbnm,./",
-        u'quertyuiop{}|asdfghjkl;"zxcvbnm<>?',
-        u"quertyuiopasdfghjklzxcvbnm",
-        u"1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-['=]\\",
-        u"qazwsxedcrfvtgbyhnujmikolp",
+        "0123456789",
+        "`1234567890-=",
+        "~!@#$%^&*()_+",
+        "abcdefghijklmnopqrstuvwxyz",
+        "quertyuiop[]\\asdfghjkl;'zxcvbnm,./",
+        'quertyuiop{}|asdfghjkl;"zxcvbnm<>?',
+        "quertyuiopasdfghjklzxcvbnm",
+        "1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-['=]\\",
+        "qazwsxedcrfvtgbyhnujmikolp",
     ],
 )
 PASSWORD_DICTIONARY = getattr(settings, "PASSWORD_DICTIONARY", None)
@@ -72,7 +72,7 @@ PASSWORD_CHECK_ONLY_AT_LOGIN = getattr(settings, "PASSWORD_CHECK_ONLY_AT_LOGIN",
 #: to change his/her password.
 #:
 #: Defaults to 60 days.
-PASSWORD_DURATION_SECONDS = getattr(settings, "PASSWORD_DURATION_SECONDS", 24 * 60 ** 3)
+PASSWORD_DURATION_SECONDS = getattr(settings, "PASSWORD_DURATION_SECONDS", 24 * 60**3)
 #: The field on the user model as defined by settings.AUTH_USER_MODEL
 #: where the password is stored.
 PASSWORD_MODEL_FIELD = getattr(settings, "PASSWORD_MODEL_FIELD", "password")
@@ -184,3 +184,8 @@ TEMPLATE_403_PAGE = getattr(settings, "TEMPLATE_403_PAGE", "403.html")
 
 
 PASSWORD_RESET_TIMEOUT_DAYS = 1
+
+PASSWORD_POLICIES_LAST_CHECKED_SESSION_KEY = "_password_policies_last_checked"
+PASSWORD_POLICIES_EXPIRED_SESSION_KEY = "_password_policies_expired"
+PASSWORD_POLICIES_LAST_CHANGED_SESSION_KEY = "_password_policies_last_changed"
+PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY = "_password_policies_change_required"

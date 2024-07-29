@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import signals
 from django.utils import timezone
+
 try:
     from django.utils.translation import gettext_lazy as _
 except ImportError:
@@ -39,6 +40,9 @@ class PasswordChangeRequired(models.Model):
         verbose_name = _("enforced password change")
         verbose_name_plural = _("enforced password changes")
 
+    def __str__(self):
+        return f"{self.user} f{self.created}"
+
 
 class PasswordHistory(models.Model):
     """
@@ -73,6 +77,9 @@ class PasswordHistory(models.Model):
         verbose_name = _("password history entry")
         verbose_name_plural = _("password history entries")
 
+    def __str__(self):
+        return f"{self.user} f{self.created}"
+
 
 class PasswordProfile(models.Model):
     """
@@ -105,6 +112,9 @@ class PasswordProfile(models.Model):
         ordering = ["-created"]
         verbose_name = _("password profile")
         verbose_name_plural = _("password profiles")
+
+    def __str__(self):
+        return f"{self.user} last changed f{self.last_changed}"
 
 
 def create_password_profile_signal(sender, instance, created, **kwargs):
