@@ -49,7 +49,7 @@ Customizing password validation can be used by simply using a
                         your_custom_validators.another_validator],)
 
         def clean(self):
-            cleaned_data = super(CustomPasswordPoliciesForm, self).clean()
+            cleaned_data = super().clean()
             new_password1 = cleaned_data.get("new_password1")
             new_password2 = cleaned_data.get("new_password2")
 

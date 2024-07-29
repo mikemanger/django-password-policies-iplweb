@@ -1,7 +1,6 @@
+from django.contrib.auth import get_user_model
 from south.db import db
 from south.v2 import SchemaMigration
-
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -24,9 +23,7 @@ class Migration(SchemaMigration):
                     self.gf("django.db.models.fields.related.OneToOneField")(
                         related_name="password_change_required",
                         unique=True,
-                        to=orm[
-                            "%s.%s" % (User._meta.app_label, User._meta.object_name)
-                        ],
+                        to=orm[f"{User._meta.app_label}.{User._meta.object_name}"],
                     ),
                 ),
             ),
@@ -52,9 +49,7 @@ class Migration(SchemaMigration):
                     "user",
                     self.gf("django.db.models.fields.related.ForeignKey")(
                         related_name="password_history_entries",
-                        to=orm[
-                            "%s.%s" % (User._meta.app_label, User._meta.object_name)
-                        ],
+                        to=orm[f"{User._meta.app_label}.{User._meta.object_name}"],
                     ),
                 ),
             ),
@@ -106,7 +101,7 @@ class Migration(SchemaMigration):
             "id": ("django.db.models.fields.AutoField", [], {"primary_key": "True"}),
             "name": ("django.db.models.fields.CharField", [], {"max_length": "50"}),
         },
-        "%s.%s" % (User._meta.app_label, User._meta.module_name): {
+        f"{User._meta.app_label}.{User._meta.module_name}": {
             "Meta": {
                 "object_name": User._meta.module_name,
                 "db_table": repr(User._meta.db_table),

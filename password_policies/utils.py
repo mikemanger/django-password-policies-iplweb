@@ -1,13 +1,13 @@
 from datetime import timedelta
 
-from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 from password_policies.conf import settings
 from password_policies.models import PasswordHistory
 
 
-class PasswordCheck(object):
+class PasswordCheck:
     "Checks if a given user needs to change his/her password."
 
     def __init__(self, user):

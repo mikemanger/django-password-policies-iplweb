@@ -1,9 +1,9 @@
 from datetime import timedelta
 
-from django.db import models
-from django.utils import timezone
 from django.contrib.auth.hashers import identify_hasher
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
+from django.utils import timezone
 
 from password_policies.conf import settings
 

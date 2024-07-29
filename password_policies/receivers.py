@@ -1,6 +1,8 @@
 import importlib
+
 from django.core.signals import setting_changed
 from django.dispatch import receiver
+
 from .conf import settings as password_settings
 
 

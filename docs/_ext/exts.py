@@ -1,15 +1,14 @@
 import inspect
-from django.utils.html import strip_tags
-from django.utils.encoding import force_unicode
 
-from fields import model_fields
-from fields import model_meta_fields
+from django.utils.encoding import force_unicode
+from django.utils.html import strip_tags
+from fields import model_fields, model_meta_fields
 
 
 def process_docstring(app, what, name, obj, options, lines):
     # This causes import errors if left outside the function
-    from django.db import models
     from django import forms
+    from django.db import models
 
     # Only look at objects that inherit from Django's base model class
     if inspect.isclass(obj) and issubclass(obj, models.Model):
@@ -25,25 +24,17 @@ def process_docstring(app, what, name, obj, options, lines):
             # Decode and strip any html out of the field's help text
             help_text = strip_tags(force_unicode(field.help_text))
 
-            lines.append(".. attribute::  %s" % field.name)
+            lines.append(f".. attribute::  {field.name}")
             lines.append("    ")
             # Add the field's type to the docstring
             if isinstance(field, models.ForeignKey):
                 to = field.rel.to
-                msg = "    %s(':class:`~%s.%s`')" % (
-                    type(field).__name__,
-                    to.__module__,
-                    to.__name__,
-                )
+                msg = f"    %s(':class:`~{type(field).__name__}.{to.__module__}`')"
             elif isinstance(field, models.OneToOneField):
                 to = field.rel.to
-                msg = "    %s(':class:`~%s.%s`')" % (
-                    type(field).__name__,
-                    to.__module__,
-                    to.__name__,
-                )
+                msg = f"    {type(field).__name__}(':class:`~{to.__module__}.{to.__name__}`')"
             else:
-                msg = "    %s" % type(field).__name__
+                msg = f"    {type(field).__name__}"
             if not field.blank:
                 msg = msg + " (Required)"
             if hasattr(field, "auto_now") and field.auto_now:
@@ -55,7 +46,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 lines.append("")
                 # Add the model field to the end of the docstring as a param
                 # using the help text as the description
-                lines.append("    %s" % help_text)
+                lines.append(f"    {help_text}")
             lines.append("    ")
             f = model_fields[type(field).__name__]
             for key in sorted(f.iterkeys()):
@@ -73,13 +64,10 @@ def process_docstring(app, what, name, obj, options, lines):
                     if key == "validators":
                         v = []
                         for i in sorted(attr):
-                            n = ":class:`~%s.%s`" % (
-                                type(i).__module__,
-                                type(i).__name__,
-                            )
+                            n = f":class:`~{type(i).__module__}.{type(i).__name__}`"
                             v.append(n)
                         attr = v
-                    lines.append("    :param %s: %s" % (key, attr))
+                    lines.append(f"    :param {key}: {attr}")
         lines.append("")
         lines.append(".. attribute:: Meta")
         lines.append("")
@@ -88,7 +76,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 hasattr(obj._meta, key)
                 and getattr(obj._meta, key) != model_meta_fields[key]
             ):
-                lines.append("    %s = %s" % (key, getattr(obj._meta, key)))
+                lines.append(f"    {key} = {getattr(obj._meta, key)}")
                 lines.append("")
 
     # Only look at objects that inherit from Django's base model class
@@ -104,14 +92,11 @@ def process_docstring(app, what, name, obj, options, lines):
                 if hasattr(f, "help_text"):
                     help_text = strip_tags(force_unicode(f.help_text))
 
-                lines.append(".. attribute::  %s" % field)
+                lines.append(f".. attribute::  {field}")
                 lines.append("")
                 # Add the field's type to the docstring
                 field_inst = obj.base_fields[field]
-                info = "   :class:`~%s.%s`" % (
-                    type(field_inst).__module__,
-                    type(field_inst).__name__,
-                )
+                info = f"   :class:`~{type(field_inst).__module__}.{type(field_inst).__name__}`"
                 if field_inst.required:
                     info = info + " (Required)"
                 lines.append(info)
@@ -120,23 +105,23 @@ def process_docstring(app, what, name, obj, options, lines):
                     msgs = {}
                     for key, value in f.error_messages.items():
                         msgs[key] = force_unicode(value)
-                    lines.append(":kwarg error_messages:  %s" % msgs)
+                    lines.append(f":kwarg error_messages:  {msgs}")
                 if f.help_text:
                     # Add the model field to the end of the docstring as a param
                     # using the help text as the description
-                    lines.append(":kwarg help_text: %s" % help_text)
+                    lines.append(f":kwarg help_text: {help_text}")
                 if hasattr(f, "initial") and f.initial:
-                    lines.append(":kwarg initial: %s" % f.initial)
+                    lines.append(f":kwarg initial: {f.initial}")
                 if hasattr(f, "localize"):
-                    lines.append(":kwarg localize: %s" % f.localize)
+                    lines.append(f":kwarg localize: {f.localize}")
                 if hasattr(f, "validators") and f.validators:
                     line_array = []
                     for v in f.validators:
                         line_array.append(
-                            ":class:`~%s.%s`" % (type(v).__module__, type(v).__name__)
+                            f":class:`~{type(v).__module__}.{type(v).__name__}`"
                         )
-                    lines.append(":kwarg validators: %s" % line_array)
-                lines.append(":kwarg widget: %s" % type(f.widget).__name__)
+                    lines.append(f":kwarg validators: {line_array}")
+                lines.append(f":kwarg widget: {type(f.widget).__name__}")
                 lines.append("")
 
     # Return the extended docstring

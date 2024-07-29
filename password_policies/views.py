@@ -1,13 +1,10 @@
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.core import signing
-from django.utils import timezone
-
-from password_policies.exceptions import MustBeLoggedOutException
-from django.urls.base import reverse
 from django.shortcuts import resolve_url
+from django.urls.base import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
-
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
@@ -18,6 +15,7 @@ from django.views.generic.base import View
 from django.views.generic.edit import FormView
 
 from password_policies.conf import settings
+from password_policies.exceptions import MustBeLoggedOutException
 from password_policies.forms import (
     PasswordPoliciesChangeForm,
     PasswordPoliciesForm,

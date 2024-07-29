@@ -1,18 +1,11 @@
 import re
 from datetime import timedelta
 
-from django.urls.base import reverse, resolve, NoReverseMatch, Resolver404
-from django.http import HttpResponseRedirect
-from django.utils import timezone
-
-import django.utils.deprecation
-
-if hasattr(django.utils.deprecation, "MiddlewareMixin"):
-    from django.utils.deprecation import MiddlewareMixin
-else:
-    MiddlewareMixin = object
-
 from django.conf import settings as django_setings
+from django.http import HttpResponseRedirect
+from django.urls.base import NoReverseMatch, Resolver404, resolve, reverse
+from django.utils import timezone
+from django.utils.deprecation import MiddlewareMixin
 
 from password_policies.conf import settings
 from password_policies.models import PasswordChangeRequired, PasswordHistory
@@ -34,19 +27,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
         is not taken...
 
     To use this middleware you need to add it to the
-    ``MIDDLEWARE_CLASSES`` list in a project's settings::
-
-        MIDDLEWARE_CLASSES = (
-            'django.middleware.common.CommonMiddleware',
-            'django.contrib.sessions.middleware.SessionMiddleware',
-            'django.middleware.csrf.CsrfViewMiddleware',
-            'django.contrib.auth.middleware.AuthenticationMiddleware',
-            'password_policies.middleware.PasswordChangeMiddleware',
-            # ... other middleware ...
-        )
-
-
-    or ``MIDDLEWARE`` if using Django 1.10 or higher:
+    ``MIDDLEWARE`` setting:
 
         MIDDLEWARE = (
             'django.middleware.common.CommonMiddleware',
@@ -120,28 +101,28 @@ class PasswordChangeMiddleware(MiddlewareMixin):
 
     def _is_excluded_path(self, actual_path):
         paths = settings.PASSWORD_CHANGE_MIDDLEWARE_EXCLUDED_PATHS[:]
-        path = r"^%s$" % self.url
+        path = rf"^{self.url}$"
         paths.append(path)
         media_url = django_setings.MEDIA_URL
         if media_url:
-            paths.append(r"^%s?" % media_url)
+            paths.append(rf"^{media_url}?")
         static_url = django_setings.STATIC_URL
         if static_url:
-            paths.append(r"^%s?" % static_url)
+            paths.append(rf"^{static_url}?")
         if settings.PASSWORD_CHANGE_MIDDLEWARE_ALLOW_LOGOUT:
             try:
                 logout_url = reverse("logout")
             except NoReverseMatch:
                 pass
             else:
-                paths.append(r"^%s$" % logout_url)
+                paths.append(rf"^{logout_url}$")
             try:
                 logout_url = "/admin/logout/"
                 resolve(logout_url)
             except Resolver404:
                 pass
             else:
-                paths.append(r"^%s$" % logout_url)
+                paths.append(rf"^{logout_url}$")
         for path in paths:
             if re.match(path, actual_path):
                 return True
@@ -154,7 +135,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
                 next_to = redirect_to
             else:
                 next_to = request.get_full_path()
-            url = "%s?%s=%s" % (self.url, settings.REDIRECT_FIELD_NAME, next_to)
+            url = f"{self.url}?{settings.REDIRECT_FIELD_NAME}={next_to}"
             return HttpResponseRedirect(url)
 
     def process_request(self, request):

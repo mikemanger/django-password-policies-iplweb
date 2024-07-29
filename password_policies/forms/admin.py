@@ -9,8 +9,7 @@ except ImportError:
 
 from password_policies.conf import settings
 from password_policies.forms.fields import PasswordPoliciesField
-from password_policies.models import PasswordHistory
-from password_policies.models import PasswordChangeRequired
+from password_policies.models import PasswordChangeRequired, PasswordHistory
 
 
 class PasswordPoliciesAdminForm(AdminPasswordChangeForm):
@@ -51,7 +50,7 @@ class ForceChangeAdminForm(PasswordPoliciesAdminForm):
     )
 
     def save(self, commit=True):
-        user = super(ForceChangeAdminForm, self).save(commit=commit)
+        user = super().save(commit=commit)
         if (
             self.cleaned_data["change_required"]
             and not PasswordChangeRequired.objects.filter(user=user).count()
@@ -62,7 +61,7 @@ class ForceChangeAdminForm(PasswordPoliciesAdminForm):
 
 class ForceChangeRequiredAdminForm(PasswordPoliciesAdminForm):
     def save(self, commit=True):
-        user = super(ForceChangeRequiredAdminForm, self).save(commit=commit)
+        user = super().save(commit=commit)
         if not PasswordChangeRequired.objects.filter(user=user).count():
             PasswordChangeRequired.objects.create(user=user)
         return user

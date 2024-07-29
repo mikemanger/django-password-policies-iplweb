@@ -5,8 +5,7 @@ import stringprep
 import unicodedata
 
 from django.core.exceptions import ValidationError
-
-from django.utils.encoding import smart_str, force_str
+from django.utils.encoding import force_str, smart_str
 
 try:
     from django.utils.translation import gettext_lazy as _
@@ -260,7 +259,7 @@ class CracklibValidator:
             crack.FascistCheck(value)
         except ValueError as reason:
             reason = _(str(reason))
-            message = _("Please choose a different password, %s." % reason)
+            message = _(f"Please choose a different password, {reason}.")
             raise ValidationError(message, code=self.code)
 
     def __init__(

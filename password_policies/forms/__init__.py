@@ -1,15 +1,12 @@
-from __future__ import unicode_literals
+from collections import OrderedDict
 
 from django import forms
 from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.hashers import is_password_usable, make_password
+from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
-
-from collections import OrderedDict
-
-from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -53,7 +50,7 @@ class PasswordPoliciesForm(forms.Form):
 
         :arg user: A :class:`~django.contrib.auth.models.User` instance."""
         self.user = user
-        super(PasswordPoliciesForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_new_password1(self):
         """
@@ -126,7 +123,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
     def clean(self):
         """
         Validates that old and new password are not too similar."""
-        cleaned_data = super(PasswordPoliciesChangeForm, self).clean()
+        cleaned_data = super().clean()
         old_password = cleaned_data.get("old_password")
         new_password1 = cleaned_data.get("new_password1")
 
@@ -148,7 +145,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
         return cleaned_data
 
     def save(self, commit=True):
-        user = super(PasswordPoliciesChangeForm, self).save(commit=commit)
+        user = super().save(commit=commit)
         try:
             # Checking the object id to prevent AssertionError id is None when deleting.
             if user.password_change_required and user.password_change_required.id:
