@@ -17,13 +17,13 @@ class PasswordCheck(object):
     def is_required(self):
         """Checks if a given user is forced to change his/her password.
 
-If an instance of :class:`~password_policies.models.PasswordChangeRequired`
-exists the verification is successful.
+        If an instance of :class:`~password_policies.models.PasswordChangeRequired`
+        exists the verification is successful.
 
-:returns: ``True`` if the user needs to change his/her password,
-    ``False`` otherwise.
-:rtype: bool
-"""
+        :returns: ``True`` if the user needs to change his/her password,
+            ``False`` otherwise.
+        :rtype: bool
+        """
         try:
             if self.user.password_change_required:
                 return True
@@ -34,10 +34,10 @@ exists the verification is successful.
     def is_expired(self):
         """Checks if a given user's password has expired.
 
-:returns: ``True`` if the user's password has expired,
-    ``False`` otherwise.
-:rtype: bool
-"""
+        :returns: ``True`` if the user's password has expired,
+            ``False`` otherwise.
+        :rtype: bool
+        """
         if PasswordHistory.objects.change_required(self.user):
             return True
         return False

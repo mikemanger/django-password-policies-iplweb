@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 try:
     from django.utils.translation import gettext_lazy as _
 except ImportError:

@@ -12,6 +12,7 @@ from collections import OrderedDict
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+
 try:
     from django.utils.translation import gettext_lazy as _
 except ImportError:
@@ -110,7 +111,7 @@ class PasswordPoliciesChangeForm(PasswordPoliciesForm):
             ),
             "password_similar": _("The old and the new password are too similar."),
             "password_identical": _("The old and the new password are the same."),
-        }
+        },
     )
     old_password = forms.CharField(label=_("Old password"), widget=forms.PasswordInput)
 

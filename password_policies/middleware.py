@@ -6,7 +6,8 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 
 import django.utils.deprecation
-if hasattr(django.utils.deprecation, 'MiddlewareMixin'):
+
+if hasattr(django.utils.deprecation, "MiddlewareMixin"):
     from django.utils.deprecation import MiddlewareMixin
 else:
     MiddlewareMixin = object
@@ -88,7 +89,6 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             request.session[self.required] = False
 
     def _check_necessary(self, request):
-
         if not request.session.get(self.checked, None):
             request.session[self.checked] = self.now
 
@@ -136,7 +136,7 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             else:
                 paths.append(r"^%s$" % logout_url)
             try:
-                logout_url = u"/admin/logout/"
+                logout_url = "/admin/logout/"
                 resolve(logout_url)
             except Resolver404:
                 pass

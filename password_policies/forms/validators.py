@@ -379,9 +379,7 @@ class DictionaryValidator(BaseSimilarityValidator):
         haystacks = []
         if self.dictionary:
             with open(self.dictionary) as dictionary:
-                haystacks.extend(
-                    [smart_str(x.strip()) for x in dictionary.readlines()]
-                )
+                haystacks.extend([smart_str(x.strip()) for x in dictionary.readlines()])
         if self.words:
             haystacks.extend(self.words)
         super().__init__(haystacks=haystacks)

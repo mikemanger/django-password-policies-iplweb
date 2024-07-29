@@ -79,12 +79,14 @@ class PasswordChangeViewsTestCase(TestCase):
         )
         assert res.status_code == 200
 
-    @override_settings(AUTH_PASSWORD_VALIDATORS=[
-        {
-            "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-            "OPTIONS": {"min_length": 20},
-        }
-    ])
+    @override_settings(
+        AUTH_PASSWORD_VALIDATORS=[
+            {
+                "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+                "OPTIONS": {"min_length": 20},
+            }
+        ]
+    )
     def test_password_change_wrong_validators(self):
         """
         A ``POST`` to the ``change_email_create`` view with valid data properly
@@ -96,7 +98,7 @@ class PasswordChangeViewsTestCase(TestCase):
             "new_password1": "Chah+pher9k",
             "new_password2": "Chah+pher9k",
         }
-        msg = 'This password is too short. It must contain at least 20 characters.'
+        msg = "This password is too short. It must contain at least 20 characters."
         self.client.login(username="alice", password=data["old_password"])
         response = self.client.post(reverse("password_change"), data=data)
         self.assertEqual(response.status_code, 200)
