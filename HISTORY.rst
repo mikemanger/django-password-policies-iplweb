@@ -1,3 +1,9 @@
+Unreleased
+----------
+
+* Remove unsupported Django code
+* Added ``__str__()`` definitions for models
+
 0.8.6
 -----
 
