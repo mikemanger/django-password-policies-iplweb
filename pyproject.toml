@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-password-policies-iplweb"
+version = "0.8.6"
+
+authors = [
+    {name = "Michal Pasternak", email = "michal.dtz@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: Django",
+    "License :: OSI Approved :: BSD License",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities"
+]
+description = "A Django application to implent password policies."
+readme = "README"
+requires-python = ">=3.8"
+dependencies = ["django"]
+
+[tool.ruff]
+target-version = "py38"
+
+[tool.ruff.lint]
+select = [
+    "DJ", # flake8-django
+    "F",  # flake8
+    "I",  # isort
+    "UP"  # pyupgrade
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[flake8]
+ignore = D503
+
+[tox]
+envlist =
+    py38-django42
+    py39-django42
+    py310-django42
+    py311-django42
+    py312-django42
+    py310-django50
+    py311-django50
+    py312-django50
+    py310-django51
+    py311-django51
+    py312-django51
+[testenv]
+deps =
+    django51: Django>=5.1rc1,<5.2
+    django50: Django>=5.0,<5.1
+    django42: Django>=4.2,<4.3
+    freezegun
+    pytest
+    pytest-django
+    pytest-cov
+# package = editable
+use_develop = true
+commands =
+	 pytest --cov password_policies --ds=password_policies.tests.test_settings password_policies/tests/ -s
+"""
