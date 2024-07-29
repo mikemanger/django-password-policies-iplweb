@@ -30,9 +30,12 @@ def password_status(request):
         auth = auth()
 
     if auth:
-        if settings.PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY not in request.session:
+        if (
+            settings.PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY
+            not in request.session
+        ):
             r = PasswordHistory.objects.change_required(request.user)
         else:
             r = request.session[settings.PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY]
-        d['password_change_required'] = r
+        d["password_change_required"] = r
     return d

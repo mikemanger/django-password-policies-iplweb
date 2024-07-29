@@ -3,7 +3,7 @@
 
 * Django 5 support
 * default to JSONSerializer
- 
+
 0.8.4
 -----
 

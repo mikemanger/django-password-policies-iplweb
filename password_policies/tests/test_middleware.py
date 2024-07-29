@@ -1,16 +1,7 @@
+from urllib.parse import urljoin
+
 from django.test import TestCase
-
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    from urlparse import urljoin
-
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls.base import reverse
-
-from django.test.utils import override_settings
+from django.urls import reverse
 from django.utils import timezone
 
 from password_policies.conf import settings
