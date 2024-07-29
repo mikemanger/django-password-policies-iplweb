@@ -261,7 +261,7 @@ class PasswordResetFormView(LoggedOutMixin, FormView):
             "request": self.request,
         }
         if self.is_admin_site:
-            opts = dict(opts, domain_override=self.request.META["HTTP_HOST"])
+            opts = dict(opts, domain_override=self.request.headers["host"])
         form.save(**opts)
         return super().form_valid(form)
 
