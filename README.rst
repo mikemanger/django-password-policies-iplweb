@@ -33,6 +33,6 @@ Documentation
 
 A detailled documentation is available on `the project's GitHub Pages`_.
 
-.. _`the project's GitHub Pages`: http://github.com/iplweb/django-password-policies-iplweb
+.. _`the project's GitHub Pages`: https://iplweb.github.io/django-password-policies-iplweb/
 .. _`Django`: https://www.djangoproject.com/
 .. -`IPLweb on github`: https://github.com/iplweb/
