@@ -6,14 +6,13 @@ import unicodedata
 
 from django.core.exceptions import ValidationError
 from django.utils.encoding import force_str, smart_str
+from django.utils.translation import ngettext
 
 try:
     from django.utils.translation import gettext_lazy as _
-    from django.utils.translation import ngettext as ungettext
 except ImportError:
     # Before in Django 3.0
     from django.utils.translation import ugettext_lazy as _
-    from django.utils.translation import ungettext
 
 from password_policies.conf import settings
 
@@ -197,7 +196,7 @@ class ConsecutiveCountValidator:
             if len(list(group)) > self.get_max_count():
                 consecutive_found = True
         if consecutive_found:
-            msg = ungettext(
+            msg = ngettext(
                 "The new password contains consecutive"
                 " characters. Only %(count)d consecutive character"
                 " is allowed.",
@@ -431,7 +430,7 @@ Nl    Number, Letter
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more letter.",
                 "The new password must contain %d or more letters.",
                 self.get_min_count(),
@@ -472,7 +471,7 @@ Ll    Letter, Lowercase
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more lowercase letter.",
                 "The new password must contain %d or more lowercase letters.",
                 self.get_min_count(),
@@ -514,7 +513,7 @@ Lu    Letter, Uppercase
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more uppercase letter.",
                 "The new password must contain %d or more uppercase letters.",
                 self.get_min_count(),
@@ -598,7 +597,7 @@ No    Number, Other
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more number.",
                 "The new password must contain %d or more numbers.",
                 self.get_min_count(),
@@ -670,7 +669,7 @@ Zl    Separator, Line
         """
         Returns this validator's error message."""
         msg = (
-            ungettext(
+            ngettext(
                 "The new password must contain %d or more symbol.",
                 "The new password must contain %d or more symbols.",
                 self.get_min_count(),
