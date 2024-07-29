@@ -11,7 +11,7 @@ Requirements
 
 This application requires
 
-* `Django`_ 3.0 or newer
+* `Django`_ 2.2 or newer
 
 .. _install-cracklib:
 
