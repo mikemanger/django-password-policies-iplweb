@@ -54,11 +54,11 @@ From Pypi
 
 To install from `PyPi`_::
 
-    [sudo] pip install django-password-policies
+    [sudo] pip install django-password-policies-iplweb
 
 or::
 
-    [sudo] easy_install django-password-policies
+    [sudo] easy_install django-password-policies-iplweb
 
 .. _`PyPi`: https://pypi.python.org/pypi/django-password-policies
 
