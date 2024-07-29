@@ -23,7 +23,7 @@ from password_policies.forms import (
     PasswordPoliciesForm,
     PasswordResetForm,
 )
-
+from password_policies.utils import string_to_datetime, datetime_to_string
 
 class LoggedOutMixin(View):
     """
@@ -99,12 +99,14 @@ class PasswordChangeFormView(FormView):
         user was requesting before the password change.)
         If not returns the :attr:`~PasswordChangeFormView.success_url` attribute
         if set, otherwise the URL to the :class:`PasswordChangeDoneView`."""
-        checked = "_password_policies_last_checked"
-        last = "_password_policies_last_changed"
-        required = "_password_policies_change_required"
+        checked = settings.PASSWORD_POLICIES_LAST_CHECKED_SESSION_KEY
+        last = settings.PASSWORD_POLICIES_LAST_CHANGED_SESSION_KEY
+        required = settings.PASSWORD_POLICIES_CHANGE_REQUIRED_SESSION_KEY
         now = timezone.now()
-        self.request.session[checked] = now
-        self.request.session[last] = now
+        now_str = datetime_to_string(now)
+
+        self.request.session[checked] = now_str
+        self.request.session[last] = now_str
         self.request.session[required] = False
         redirect_to = self.request.POST.get(self.redirect_field_name, "")
         if redirect_to:

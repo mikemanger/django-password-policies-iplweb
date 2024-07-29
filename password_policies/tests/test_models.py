@@ -23,4 +23,4 @@ class PasswordHistoryModelTestCase(TestCase):
         self.assertEqual(count, settings.PASSWORD_HISTORY_COUNT)
 
     def test_password_history_recent_passwords(self):
-        self.failIf(PasswordHistory.objects.check_password(self.user, passwords[-1]))
+        self.assertFalse(PasswordHistory.objects.check_password(self.user, passwords[-1]))
