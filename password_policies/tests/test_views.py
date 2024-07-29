@@ -50,12 +50,7 @@ class PasswordChangeViewsTestCase(TestCase):
         response = self.client.post(reverse("password_change"), data=data)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context["form"].is_valid())
-        if DJANGO_VERSION > (4, 1):
-            self.assertFormError(
-                response.context["form"], field="old_password", errors=msg
-            )
-        else:
-            self.assertFormError(response, "form", field="old_password", errors=msg)
+        self.assertFormError(response.context["form"], field="old_password", errors=msg)
         self.client.logout()
 
     def test_password_change_success(self):
@@ -114,12 +109,9 @@ class PasswordChangeViewsTestCase(TestCase):
         response = self.client.post(reverse("password_change"), data=data)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context["form"].is_valid())
-        if DJANGO_VERSION > (4, 1):
-            self.assertFormError(
-                response.context["form"], field="new_password2", errors=msg
-            )
-        else:
-            self.assertFormError(response, "form", field="new_password2", errors=msg)
+        self.assertFormError(
+            response.context["form"], field="new_password2", errors=msg
+        )
         self.client.logout()
 
     def test_password_reset_complete(self):

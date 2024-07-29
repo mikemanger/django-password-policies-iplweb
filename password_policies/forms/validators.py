@@ -6,13 +6,8 @@ import unicodedata
 
 from django.core.exceptions import ValidationError
 from django.utils.encoding import force_str, smart_str
+from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext
-
-try:
-    from django.utils.translation import gettext_lazy as _
-except ImportError:
-    # Before in Django 3.0
-    from django.utils.translation import ugettext_lazy as _
 
 from password_policies.conf import settings
 

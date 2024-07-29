@@ -9,12 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-
-try:
-    from django.utils.translation import gettext_lazy as _
-except ImportError:
-    # Before in Django 3.0
-    from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from password_policies.conf import settings
 from password_policies.forms.fields import PasswordPoliciesField
