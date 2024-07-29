@@ -19,6 +19,7 @@ def force_password_change(modeladmin, request, queryset):
     )
 
 
+@admin.register(PasswordHistory)
 class PasswordHistoryAdmin(admin.ModelAdmin):
     date_hierarchy = "created"
     exclude = ("password",)
@@ -34,6 +35,7 @@ class PasswordHistoryAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(PasswordChangeRequired)
 class PasswordChangeRequiredAdmin(admin.ModelAdmin):
     date_hierarchy = "created"
     list_display = ("id", "user", "created")
@@ -52,7 +54,3 @@ class PasswordChangeRequiredAdmin(admin.ModelAdmin):
             return ["user"]
         else:
             return []
-
-
-admin.site.register(PasswordHistory, PasswordHistoryAdmin)
-admin.site.register(PasswordChangeRequired, PasswordChangeRequiredAdmin)

@@ -68,6 +68,6 @@ URL pattern needs to be added to a project's ``URLconf``::
 
     from your_app.forms import CustomPasswordPoliciesForm
 
-    urlpatterns = patterns('',
-        (r'^password/reset/', PasswordResetConfirmView.as_view(form_class=CustomPasswordPoliciesForm)),
-    )
+    urlpatterns = [
+        path("password/reset/", PasswordResetConfirmView.as_view(form_class=CustomPasswordPoliciesForm)),
+    ]

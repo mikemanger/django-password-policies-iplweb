@@ -1,4 +1,4 @@
-from django.urls import re_path as url
+from django.urls import path, re_path
 
 from password_policies.views import (
     PasswordChangeDoneView,
@@ -10,20 +10,18 @@ from password_policies.views import (
 )
 
 urlpatterns = [
-    url(
-        r"^change/done/$", PasswordChangeDoneView.as_view(), name="password_change_done"
-    ),
-    url(r"^change/$", PasswordChangeFormView.as_view(), name="password_change"),
-    url(r"^reset/$", PasswordResetFormView.as_view(), name="password_reset"),
-    url(
-        r"^reset/complete/$",
+    path("change/done/", PasswordChangeDoneView.as_view(), name="password_change_done"),
+    path("change/", PasswordChangeFormView.as_view(), name="password_change"),
+    path("reset/", PasswordResetFormView.as_view(), name="password_reset"),
+    path(
+        "reset/complete/",
         PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
-    url(
+    re_path(
         r"^reset/confirm/([0-9A-Za-z_\-]+)/([0-9A-Za-z]{1,13})/([0-9A-Za-z-=_]{1,128})/$",
         PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
-    url(r"^reset/done/$", PasswordResetDoneView.as_view(), name="password_reset_done"),
+    path("reset/done/", PasswordResetDoneView.as_view(), name="password_reset_done"),
 ]
