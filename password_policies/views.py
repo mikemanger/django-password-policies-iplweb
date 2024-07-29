@@ -168,7 +168,7 @@ class PasswordResetConfirmView(LoggedOutMixin, FormView):
                 self.user = None
             else:
                 signer = signing.TimestampSigner()
-                max_age = settings.PASSWORD_RESET_TIMEOUT_DAYS * 24 * 60 * 60
+                max_age = settings.PASSWORD_RESET_TIMEOUT
                 il = (self.user.password, self.timestamp, self.signature)
                 try:
                     signer.unsign(":".join(il), max_age=max_age)
